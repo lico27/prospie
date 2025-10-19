@@ -25,6 +25,8 @@ dist-ssr
 
 # local env files
 .env*.local
+.env
+*/.env
 
 # vercel
 .vercel
@@ -32,10 +34,14 @@ dist-ssr
 # production
 /build
 
+# Python virtual environments
 venv/
 env/
 myenv/
 .venv/
 *.pyc
 __pycache__/
-.env
+
+# Data files
+database-builder/data/*
+!database-builder/data/.gitkeep
