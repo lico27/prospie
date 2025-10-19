@@ -7,13 +7,13 @@ def get_sample():
     Gets data from CSVs and calculates sizes for proportional sampling. Gets sample of charity numbers to use for prototype.
     """
 
-    target = 20
+    target = 500
     total = 15271
 
     #get path for data files
     current_dir = os.path.dirname(os.path.abspath(__file__))
     data_dir = os.path.join(current_dir, "data")
-    
+
     file_names = [
         os.path.join(data_dir, "0-49k.csv"),
         os.path.join(data_dir, "50k-99k.csv"),

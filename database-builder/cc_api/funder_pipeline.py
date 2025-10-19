@@ -7,7 +7,7 @@ from sample_function import get_sample
 def get_funder_data():
 
 	c_nums, _ = get_sample()
-	#c_nums = ["1015792", "1168435", "239754", "265281", "287535", "1185673", "1197528", "1051202"]
+	# c_nums = ["1015792", "1168435", "239754", "265281", "287535", "1185673", "1197528", "1051202"]
 
 	df = extract_cc_data(c_nums)
 

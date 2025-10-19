@@ -46,7 +46,25 @@ def get_grant_data(c_nums):
 
         try:
                 #finalise and tidy grants table
-                grants = grants[["grant_id", "data.title", "data.description", "data.amountAwarded", "data.currency", "data.awardDate", "recipient_id", "recipient_name", "recipient_description"]]
+                core_cols = ["grant_id", "data.awardDate"]
+                optional_cols = [
+                        "data.title",
+                        "data.description",
+                        "data.amountAwarded",
+                        "data.currency",
+                        "recipient_id",
+                        "recipient_name",
+                        "recipient_description"
+                ]
+
+                #add optional columns only if they exist, otherwise create with None
+                for col in optional_cols:
+                        if col not in grants.columns:
+                                grants[col] = None
+
+                select_cols = core_cols + optional_cols
+                grants = grants[select_cols]
+
                 grants.loc[:, 'data.awardDate'] = grants['data.awardDate'].astype(str).str.strip().str[:4]
                 grants = grants.rename(columns={"data.title": "grant_title",
                                                 "data.description": "grant_desc",
