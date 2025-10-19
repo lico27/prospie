@@ -2,11 +2,12 @@ from src.cc_api.client import extract_cc_data
 from src.cc_api.classifications_builder import build_classifications_tables
 from src.cc_api.areas_builder import build_areas_tables
 from src.utils import clean_data
+from src.sample_function import get_sample
 
 def get_funder_data():
 
-	# c_nums, _ = get_sample()
-	c_nums = ["1015792", "1168435", "239754", "265281", "287535", "1185673", "1197528", "1051202"]
+	c_nums, _ = get_sample()
+	#c_nums = ["1015792", "1168435", "239754", "265281", "287535", "1185673", "1197528", "1051202"]
 
 	df = extract_cc_data(c_nums)
 

@@ -6,7 +6,7 @@ def get_sample():
     Gets data from CSVs and calculates sizes for proportional sampling. Gets sample of charity numbers to use for prototype.
     """
 
-    target = 500
+    target = 20
     total = 15271
     file_names = ["./data/0-49k.csv", "./data/50k-99k.csv", "./data/100k-199k.csv", "./data/200k-499k.csv", "./data/500k-1m.csv", "./data/1m.csv"]
     dataframes = {}

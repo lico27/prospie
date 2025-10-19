@@ -15,6 +15,16 @@ def call_360_api(c_nums):
                 r = requests.get(url, headers={"Accept": "application/json"})
                 r.raise_for_status()
 
+                #deal with errors
+                if r.status_code == 429:
+                    time.sleep(5)
+                    continue
+                if r.status_code == 404:
+                    time.sleep(0.6)
+                    break
+
+                r.raise_for_status()
+
                 data = r.json()
 
                 for grant in data["results"]:
@@ -24,13 +34,14 @@ def call_360_api(c_nums):
                 url = data["next"]
 
                 #limit requests
-                if url is not None:
-                    time.sleep(0.6)
+                time.sleep(0.6)
 
         except requests.exceptions.HTTPError as e:
+            time.sleep(0.6)
             continue
         except requests.exceptions.RequestException as e:
             print(f"Error fetching grants for {num}: {e}")
+            time.sleep(0.6)
             continue
 
     return grants
