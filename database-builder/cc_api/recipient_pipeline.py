@@ -12,7 +12,7 @@ def get_recipient_data(recipient_grants, recipients_info, areas):
 		return empty_recipients, empty_recipient_areas, areas
 
 	#convert recipients to list
-	c_nums = list(recipient_grants[recipient_grants["recipient_id"].str.isdigit()]["recipient_id"])
+	c_nums = list(recipient_grants[recipient_grants["recipient_id"].notna() & recipient_grants["recipient_id"].str.isdigit()]["recipient_id"])
 
 	#handle empty c_nums
 	if not c_nums or len(c_nums) == 0:

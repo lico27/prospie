@@ -18,6 +18,11 @@ def pipe_to_supabase(df, table, unique_key):
         print(f"Skipping table '{table}' - DataFrame is empty (no data to upload)")
         return
 
+    #convert ints
+    for col in df.columns:
+        if df[col].dtype == 'Int64':
+            df[col] = df[col].apply(lambda x: int(x) if pd.notna(x) else None)
+
     #make df into dictionaries to be readable by supabase
     records = df.to_dict("records")
 

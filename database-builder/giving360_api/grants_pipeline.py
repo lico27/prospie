@@ -72,7 +72,8 @@ def get_grant_data(c_nums):
                                                 "data.currency": "currency",
                                                 "data.awardDate": "year"
                                                 })
-                grants["recipient_id"] = grants["recipient_id"].str.replace("^GB-CHC-", "", regex=True)
+                grants["recipient_id"] = grants["recipient_id"].fillna('').astype(str).str.replace("^GB-CHC-", "", regex=True)
+                grants.loc[grants["recipient_id"] == '', "recipient_id"] = None
                 grants = grants.rename(columns={"recipient_description": "recipient_activities"})
 
                 #build join tables

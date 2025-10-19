@@ -24,20 +24,33 @@ def clean_data(tables, title_cols, sentence_cols, int_cols):
         #convert nans into json-readable nulls
         tables[i] = tables[i].where(pd.notnull(tables[i]), None)
 
+        #remove null bytes and other invalid characters from strings
+        for col in tables[i].columns:
+            if tables[i][col].dtype == 'object':
+                def clean_string(x):
+                    if isinstance(x, str):
+                        x = x.replace('\x00', '')
+                        x = ''.join(char for char in x if ord(char) >= 32 or char in ['\n', '\t', '\r'])
+                        return x
+                    return x
+                tables[i][col] = tables[i][col].apply(clean_string)
+
         #change to title case for relevant columns
         for col in title_cols:
             if col in tables[i].columns:
-                tables[i].loc[:, col] = tables[i][col].str.strip().str.title()
+                tables[i].loc[:, col] = tables[i][col].fillna('').astype(str).str.strip().str.title()
+                tables[i].loc[tables[i][col] == '', col] = None
 
         #change to sentence case for relevant columns
         for col in sentence_cols:
             if col in tables[i].columns:
-                tables[i].loc[:, col] = tables[i][col].str.strip().str.capitalize()
+                tables[i].loc[:, col] = tables[i][col].fillna('').astype(str).str.strip().str.capitalize()
+                tables[i].loc[tables[i][col] == '', col] = None
 
         #change to int for relevant columns
         for col in int_cols:
             if col in tables[i].columns:
-                tables[i].loc[:, col] = tables[i][col].astype(int)
+                tables[i].loc[:, col] = pd.to_numeric(tables[i][col], errors='coerce').astype('Int64')
 
         #ensure financial figures are positive
         if "income" in tables[i].columns:

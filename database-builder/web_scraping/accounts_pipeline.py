@@ -71,7 +71,10 @@ def get_accounts_data(c_nums):
 
     try:
         #convert list to dataframe
-        accounts = pd.DataFrame(accounts_data)
+        if not accounts_data or len(accounts_data) == 0:
+            accounts = pd.DataFrame(columns=["registered_num", "year_end", "content", "url"])
+        else:
+            accounts = pd.DataFrame(accounts_data)
     except Exception as e:
         print(f"Error creating DataFrame: {e}")
         raise
