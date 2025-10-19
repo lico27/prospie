@@ -2,13 +2,8 @@ from cc_api.client import extract_cc_data
 from cc_api.classifications_builder import build_classifications_tables
 from cc_api.areas_builder import build_areas_tables
 from utils import clean_data
-from sample_function import get_sample
 
-def get_funder_data():
-
-	c_nums, sample_sizes = get_sample()
-	# c_nums = ["1015792", "1168435", "239754", "265281", "287535", "1185673", "1197528", "1051202"]
-	print(sample_sizes)
+def get_funder_data(c_nums):
 
 	df = extract_cc_data(c_nums)
 
@@ -40,4 +35,4 @@ def get_funder_data():
 	clean_tables_funders = clean_data(cc_funder_tables, ["name"], ["activities", "objectives"], [])
 	funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas = clean_tables_funders
 
-	return funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas, c_nums
+	return funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas
