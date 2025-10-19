@@ -7,7 +7,7 @@ def get_sample():
     Gets data from CSVs and calculates sizes for proportional sampling. Gets sample of charity numbers to use for prototype.
     """
 
-    target = 500
+    target = 50
     total = 15271
 
     #get path for data files
@@ -40,7 +40,7 @@ def get_sample():
         sample_sizes[sample_name] = df_sample
 
         #get proportional sample
-        dataframes[f"df_{chr(ord('a') + i)}"] = df.sample(n=sample_sizes[f"df_{chr(ord('a') + i)}_sample"], random_state=42)
+        dataframes[f"df_{chr(ord('a') + i)}"] = df.sample(n=sample_sizes[f"df_{chr(ord('a') + i)}_sample"], random_state=27)
 
     #combine dfs
     for df in dataframes.values():
@@ -50,4 +50,13 @@ def get_sample():
     c_nums = df_all["Charity Number"].astype(str).tolist()
 
     return c_nums, sample_sizes
-    
+
+
+if __name__ == "__main__":
+    import json
+
+    c_nums, sample_sizes = get_sample()
+
+    output_file = os.path.join(os.path.dirname(__file__), "sample_charity_numbers.json")
+    with open(output_file, 'w') as f:
+        json.dump({"charity_numbers": c_nums, "sample_sizes": sample_sizes}, f)

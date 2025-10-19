@@ -1,12 +1,18 @@
+import json
+import os
 from tables_builder import get_data
 from data_importer import pipe_to_supabase
 
 if __name__ == "__main__":
     try:
-        funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas, grants, funder_grants, recipients, recipient_grants, recipient_areas, accounts = get_data()
+        #load charity numbers from sample
+        sample_file = os.path.join(os.path.dirname(__file__), "..", "sample_generator", "sample_charity_numbers.json")
+        with open(sample_file, 'r') as f:
+            sample_data = json.load(f)
+        c_nums = sample_data["charity_numbers"]
 
-        for df in [funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas, grants, funder_grants, recipients, recipient_grants, recipient_areas, accounts]:
-            print(df.head(15))
+        #get data
+        funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas, grants, funder_grants, recipients, recipient_grants, recipient_areas = get_data(c_nums)
 
         #dictionary to hold tables and their keys
         tables = {
@@ -16,7 +22,6 @@ if __name__ == "__main__":
             "areas": (areas, "area_id"),
             "grants": (grants, "grant_id"),
             "recipients": (recipients, "recipient_id"),
-            "accounts": (accounts, "url"),
             "funder_beneficiaries": (funder_beneficiaries, "registered_num,ben_id"),
             "funder_causes": (funder_causes, "registered_num,cause_id"),
             "funder_areas": (funder_areas, "registered_num,area_id"),
