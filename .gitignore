@@ -41,7 +41,3 @@ myenv/
 .venv/
 *.pyc
 __pycache__/
-
-# Data files
-database-builder/data/*
-!database-builder/data/.gitkeep

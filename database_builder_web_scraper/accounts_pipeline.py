@@ -31,18 +31,33 @@ def get_accounts_data(c_nums):
         for link in accounts_links:
             try:
                 #get full url of accounts
-                pdf_url = link["href"]
-                
+                pdf_url = link.get("href")
+                if not pdf_url:
+                    continue
+
                 #get pdf
-                pdf_response = requests.get(pdf_url, headers=headers)
+                pdf_response = requests.get(pdf_url, headers=headers, timeout=30)
                 pdf_response.raise_for_status()
-                
+
+                #verify content is actually a PDF
+                if not pdf_response.content or len(pdf_response.content) == 0:
+                    continue
+
                 #read pdf and extract contents
                 pdf_file = BytesIO(pdf_response.content)
                 pdf_reader = PyPDF2.PdfReader(pdf_file)
+
+                #check if PDF is encrypted or corrupted
+                if pdf_reader.is_encrypted:
+                    continue
+
                 full_text = ""
                 for page in pdf_reader.pages:
                     full_text += page.extract_text()
+
+                #skip if no text was extracted
+                if not full_text or len(full_text.strip()) == 0:
+                    continue
 
                 #get year end from date
                 year_end = None
@@ -53,7 +68,7 @@ def get_accounts_data(c_nums):
                         year = aria_split[-2].rstrip(",.;:")
                         if year.isdigit() and len(year) == 4:
                             year_end = year
-                
+
                 #add to list
                 accounts_data.append({
                     "registered_num": num,
@@ -62,11 +77,14 @@ def get_accounts_data(c_nums):
                     "url": pdf_url
                 })
 
-                # Rate limiting: wait after downloading each PDF
+                #limit requests
                 time.sleep(0.5)
 
-            except Exception as e:
-                print(f"Error processing PDF for {num}: {e}")
+            except requests.exceptions.RequestException:
+                continue
+            except PyPDF2.errors.PdfReadError:
+                continue
+            except Exception:
                 continue
 
     try:
