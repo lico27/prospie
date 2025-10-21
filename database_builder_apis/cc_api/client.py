@@ -36,7 +36,7 @@ def call_cc_api(operation, hdr, c_nums, charity_data, columns, df_rows):
 			try:
 				req = urllib.request.Request(url, headers=hdr)
 				req.get_method = lambda: 'GET'
-				response = urllib.request.urlopen(req)
+				response = urllib.request.urlopen(req, timeout=30)
 
 				data = json.load(response)
 				response.close()

@@ -78,7 +78,7 @@ def get_grant_data(c_nums):
 
                 #build join tables
                 funder_grants = grant_df[["grant_id", "funder_registered_num"]].rename(columns={"funder_registered_num": "registered_num"})
-                recipient_grants = grants[["grant_id", "recipient_id"]]
+                recipient_grants = grants[["grant_id", "recipient_id"]].dropna(subset=["recipient_id"])
 
                 #build recipients info table for non-charity recipients
                 #keep first occurrence of each recipient_id to avoid duplicates

@@ -15,8 +15,18 @@ def pipe_to_supabase(df, table, unique_key):
 
     #check if dataframe is empty
     if df.empty or len(df) == 0:
-        print(f"Skipping table '{table}' - DataFrame is empty (no data to upload)")
         return
+
+    #parse unique key columns
+    unique_cols = [col.strip() for col in unique_key.split(',')]
+
+    #check for duplicates based on unique key
+    original_count = len(df)
+    duplicates_before = df.duplicated(subset=unique_cols, keep=False).sum()
+
+    if duplicates_before > 0:
+        #keep first occurrence of each duplicate
+        df = df.drop_duplicates(subset=unique_cols, keep='first')
 
     #convert ints
     for col in df.columns:
@@ -27,7 +37,6 @@ def pipe_to_supabase(df, table, unique_key):
     records = df.to_dict("records")
 
     try:
-        print(f"Attempting to upsert {len(records)} records to table: {table}")
         #pipe df to supabase
         response = (
             supabase.table(table)
@@ -36,5 +45,5 @@ def pipe_to_supabase(df, table, unique_key):
         )
         print(f"✓ Successfully upserted {len(records)} records to {table}")
     except Exception as e:
-        print(f"Error upserting to {table}: {e}")
+        print(f"✗ Error upserting to {table}: {e}")
         raise
