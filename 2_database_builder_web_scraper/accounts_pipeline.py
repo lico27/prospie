@@ -4,11 +4,12 @@ import PyPDF2
 from io import BytesIO
 import pandas as pd
 import time
+from utils import check_accounts
 
 def get_accounts_data(c_nums):
     
     accounts_data = []
-
+    
     for num in c_nums:
         try:
             #get charity's accounts page
@@ -96,5 +97,5 @@ def get_accounts_data(c_nums):
     except Exception as e:
         print(f"Error creating DataFrame: {e}")
         raise
-
+            
     return accounts
