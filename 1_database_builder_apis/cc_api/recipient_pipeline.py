@@ -63,6 +63,9 @@ def get_recipient_data(recipient_grants, recipients_info, areas):
 		new_areas = new_areas.rename(columns={"area_type": "area_level"})
 		areas = pd.concat([areas, new_areas], ignore_index=True)
 
+	#deduplicate areas after adding new ones
+	areas = areas.drop_duplicates(subset=["area_name", "area_level"], keep="first").reset_index(drop=True)
+
 	#merge with updated areas table to get area IDs
 	recipient_areas = recipient_all_areas.merge(
 		areas.rename(columns={"area_level": "area_type"}),
