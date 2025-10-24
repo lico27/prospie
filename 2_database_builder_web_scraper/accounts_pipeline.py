@@ -1,15 +1,14 @@
 from bs4 import BeautifulSoup
 import requests
-import PyPDF2
-from io import BytesIO
 import pandas as pd
 import time
-from utils import check_accounts
 
-def get_accounts_data(c_nums):
+#get urls of accessible accounts
+def get_accounts_urls(c_nums):
     
     accounts_data = []
-    
+    inaccessible_accounts = []
+       
     for num in c_nums:
         try:
             #get charity's accounts page
@@ -22,11 +21,23 @@ def get_accounts_data(c_nums):
             soup = BeautifulSoup(src, "lxml")
             accounts_links = soup.find_all("a", class_="accounts-download-link")
 
+            #check if no accounts links found
+            if not accounts_links:
+                inaccessible_accounts.append({"registered_num": num,
+                                              "year_end": None,
+                                              "url": None,
+                                              "accounts_accessed": False})
+                continue
+
             #limit requests
             time.sleep(1.0)
 
         except Exception as e:
             print(f"Error fetching or parsing accounts page for {num}: {e}")
+            inaccessible_accounts.append({"registered_num": num,
+                                          "year_end": None,
+                                          "url": None,
+                                          "accounts_accessed": False})
             continue
 
         for link in accounts_links:
@@ -34,30 +45,6 @@ def get_accounts_data(c_nums):
                 #get full url of accounts
                 pdf_url = link.get("href")
                 if not pdf_url:
-                    continue
-
-                #get pdf
-                pdf_response = requests.get(pdf_url, headers=headers, timeout=30)
-                pdf_response.raise_for_status()
-
-                #verify content is actually a PDF
-                if not pdf_response.content or len(pdf_response.content) == 0:
-                    continue
-
-                #read pdf and extract contents
-                pdf_file = BytesIO(pdf_response.content)
-                pdf_reader = PyPDF2.PdfReader(pdf_file)
-
-                #check if PDF is encrypted or corrupted
-                if pdf_reader.is_encrypted:
-                    continue
-
-                full_text = ""
-                for page in pdf_reader.pages:
-                    full_text += page.extract_text()
-
-                #skip if no text was extracted
-                if not full_text or len(full_text.strip()) == 0:
                     continue
 
                 #get year end from date
@@ -74,28 +61,36 @@ def get_accounts_data(c_nums):
                 accounts_data.append({
                     "registered_num": num,
                     "year_end": year_end,
-                    "content": full_text,
-                    "url": pdf_url
+                    "url": pdf_url,
+                    "accounts_accessed": True
                 })
 
                 #limit requests
                 time.sleep(0.5)
 
-            except requests.exceptions.RequestException:
-                continue
-            except PyPDF2.errors.PdfReadError:
-                continue
-            except Exception:
+            except Exception as e:
+                print(f"Error getting accounts URL for {num}: {e}")
                 continue
 
+    #convert lists to dataframe
     try:
-        #convert list to dataframe
         if not accounts_data or len(accounts_data) == 0:
-            accounts = pd.DataFrame(columns=["registered_num", "year_end", "content", "url"])
+            accounts = pd.DataFrame(columns=["registered_num", "year_end", "url"])
         else:
             accounts = pd.DataFrame(accounts_data)
     except Exception as e:
         print(f"Error creating DataFrame: {e}")
         raise
-            
+
+    try:
+        if not inaccessible_accounts or len(inaccessible_accounts) == 0:
+            inaccessible = pd.DataFrame(columns=["registered_num", "year_end", "url", "accounts_accessed"])
+        else:
+            inaccessible = pd.DataFrame(inaccessible_accounts)
+    except Exception as e:
+        print(f"Error creating DataFrame: {e}")
+        raise   
+    
+    accounts = pd.concat([accounts, inaccessible], ignore_index=True)
+
     return accounts
