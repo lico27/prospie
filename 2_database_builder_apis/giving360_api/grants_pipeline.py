@@ -1,5 +1,10 @@
+import sys
+import os
 import pandas as pd
 from giving360_api.client import call_360_api
+
+#add project root to path for utils import
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from utils import clean_data
 
 def get_grant_data(c_nums):

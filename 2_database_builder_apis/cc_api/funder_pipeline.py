@@ -1,6 +1,11 @@
+import sys
+import os
 from cc_api.client import extract_cc_data
 from cc_api.classifications_builder import build_classifications_tables
 from cc_api.areas_builder import build_areas_tables
+
+#add project root to path for utils import
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from utils import clean_data
 
 def get_funder_data(c_nums):

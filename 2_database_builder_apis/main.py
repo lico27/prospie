@@ -1,15 +1,16 @@
 import json
 import os
+import traceback
 from tables_builder import get_data
 from data_importer import pipe_to_supabase
 
 if __name__ == "__main__":
     try:
         #load charity numbers from sample
-        sample_file = os.path.join(os.path.dirname(__file__), "..", "sample_generator", "sample_charity_numbers.json")
+        sample_file = os.path.join(os.path.dirname(__file__), "..", "1_sample_generator", "sample_charity_numbers.json")
         with open(sample_file, 'r') as f:
             sample_data = json.load(f)
-        c_nums = sample_data["charity_numbers"]
+        c_nums = sample_data["charity_numbers"][0:5]
 
         #get data
         funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas, grants, funder_grants, recipients, recipient_grants, recipient_areas = get_data(c_nums)
@@ -38,7 +39,6 @@ if __name__ == "__main__":
 
     except Exception as e:
         print(f"\n✗ Pipeline failed with error: {e}")
-        import traceback
         traceback.print_exc()
         raise
 

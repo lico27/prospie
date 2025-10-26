@@ -1,6 +1,11 @@
+import sys
+import os
 import pandas as pd
 from cc_api.client import extract_cc_data
 from cc_api.areas_builder import transform_area_columns
+
+#add project root to path for utils import
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from utils import clean_data
 
 def get_recipient_data(recipient_grants, recipients_info, areas):

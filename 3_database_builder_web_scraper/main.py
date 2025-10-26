@@ -1,7 +1,7 @@
 import json
 import os
 import traceback
-from accounts_pipeline import get_accounts, save_accounts
+from accounts_pipeline import get_accounts, save_accounts, ocr_accounts
 
 
 if __name__ == "__main__":
@@ -17,6 +17,12 @@ if __name__ == "__main__":
         #download and save accounts locally
         accounts = get_accounts(c_nums)
         accounts = save_accounts(accounts)
+
+        #loop through downloaded accounts and run ocr
+        for i, row in accounts.iterrows():
+            file_path = row.get("file_path")
+            if file_path and os.path.exists(file_path):
+                ocr_accounts(file_path)
 
         print("\n✓ Pipeline completed successfully!")
 
