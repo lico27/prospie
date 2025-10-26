@@ -41,3 +41,5 @@ myenv/
 .venv/
 *.pyc
 __pycache__/
+
+/accounts
