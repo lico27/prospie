@@ -1,96 +1,30 @@
-from bs4 import BeautifulSoup
-import requests
 import pandas as pd
-import time
+from accounts_downloader import get_accounts_urls, download_accounts
 
-#get urls of accessible accounts
-def get_accounts_urls(c_nums):
-    
-    accounts_data = []
-    inaccessible_accounts = []
-       
-    for num in c_nums:
-        try:
-            #get charity's accounts page
-            headers = {"User-Agent": "Mozilla/5.0"}
-            result = requests.get(f"https://register-of-charities.charitycommission.gov.uk/en/charity-search/-/charity-details/{num}/accounts-and-annual-returns?_uk_gov_ccew_onereg_charitydetails_web_portlet_CharityDetailsPortlet_organisationNumber={num}", headers=headers)
-            result.raise_for_status()
+def get_accounts(c_nums):
+    accounts = get_accounts_urls(c_nums)
+    return accounts
 
-            #parse page and find links to download accounts
-            src = result.content
-            soup = BeautifulSoup(src, "lxml")
-            accounts_links = soup.find_all("a", class_="accounts-download-link")
+def save_accounts(accounts):
+    for i, row in accounts.iterrows():
+        accounts_url = row["url"]
+        registered_num = row["registered_num"]
+        year = row["year_end"]
 
-            #check if no accounts links found
-            if not accounts_links:
-                inaccessible_accounts.append({"registered_num": num,
-                                              "year_end": None,
-                                              "url": None,
-                                              "accounts_accessed": False})
-                continue
-
-            #limit requests
-            time.sleep(1.0)
-
-        except Exception as e:
-            print(f"Error fetching or parsing accounts page for {num}: {e}")
-            inaccessible_accounts.append({"registered_num": num,
-                                          "year_end": None,
-                                          "url": None,
-                                          "accounts_accessed": False})
-            continue
-
-        for link in accounts_links:
+        #only download if url exists
+        if accounts_url is not None:
             try:
-                #get full url of accounts
-                pdf_url = link.get("href")
-                if not pdf_url:
-                    continue
+                #download accounts
+                save_path = f"accounts/{registered_num}_{year}.pdf"
+                success = download_accounts(accounts_url, save_path)
 
-                #get year end from date
-                year_end = None
-                aria_label = link.get("aria-label")
-                if aria_label:
-                    aria_split = aria_label.split()
-                    if len(aria_split) >= 2:
-                        year = aria_split[-2].rstrip(",.;:")
-                        if year.isdigit() and len(year) == 4:
-                            year_end = year
-
-                #add to list
-                accounts_data.append({
-                    "registered_num": num,
-                    "year_end": year_end,
-                    "url": pdf_url,
-                    "accounts_accessed": True
-                })
-
-                #limit requests
-                time.sleep(0.5)
-
+                #add to df if successful
+                if success:
+                    accounts.at[i, "file_path"] = save_path
             except Exception as e:
-                print(f"Error getting accounts URL for {num}: {e}")
-                continue
-
-    #convert lists to dataframe
-    try:
-        if not accounts_data or len(accounts_data) == 0:
-            accounts = pd.DataFrame(columns=["registered_num", "year_end", "url"])
+                accounts.at[i, "file_path"] = None
         else:
-            accounts = pd.DataFrame(accounts_data)
-    except Exception as e:
-        print(f"Error creating DataFrame: {e}")
-        raise
-
-    try:
-        if not inaccessible_accounts or len(inaccessible_accounts) == 0:
-            inaccessible = pd.DataFrame(columns=["registered_num", "year_end", "url", "accounts_accessed"])
-        else:
-            inaccessible = pd.DataFrame(inaccessible_accounts)
-    except Exception as e:
-        print(f"Error creating DataFrame: {e}")
-        raise   
-    
-    accounts = pd.concat([accounts, inaccessible], ignore_index=True)
+            #no url available
+            accounts.at[i, "file_path"] = None
 
     return accounts
