@@ -13,9 +13,9 @@ if __name__ == "__main__":
 
         c_nums = ["1061180", "1157483"]
 
-        accounts_pipeline(c_nums)
+        accounts = accounts_pipeline(c_nums)
 
-
+        print(accounts.head())
 
         print("\n✓ Pipeline completed successfully!")
 

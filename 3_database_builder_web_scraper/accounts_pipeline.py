@@ -2,7 +2,7 @@ import pandas as pd
 import os
 from accounts_downloader import get_accounts_urls, download_accounts
 from utils import ocr_accounts
-from pdf_text_extractor import get_accounts_text
+from pdf_text_extractor import get_accounts_text, find_accounts_sections
 
 def get_accounts(c_nums):
     accounts = get_accounts_urls(c_nums)
@@ -52,3 +52,35 @@ def accounts_pipeline(c_nums):
             get_accounts_text(file_path, accounts, i)
         else:
             accounts.at[i, "accounts_text"] = None
+
+    #loop through accounts to find objectives/activities and achievements/performance
+    for i, row in accounts.iterrows():
+        text = accounts.at[i, "accounts_text"]
+        file_path = accounts.at[i, "file_path"]
+        
+        if text:
+            print(f"Checking for objectives/activities and achievements in row {i}")
+            has_obj, obj_text, has_achievement, achievement_text = find_accounts_sections(file_path, text)
+            
+            # Save text results
+            accounts.at[i, "objectives_activities_text"] = obj_text
+            accounts.at[i, "achievements_performance_text"] = achievement_text
+            
+            # Print results
+            if has_obj and obj_text:
+                print(f"  Objectives/activities found! Length: {len(obj_text)} characters")
+            elif has_obj and not obj_text:
+                print(f"  Objectives/activities heading found but text too short")
+            
+            if has_achievement and achievement_text:
+                print(f"  Achievements/performance found! Length: {len(achievement_text)} characters")
+            elif has_achievement and not achievement_text:
+                print(f"  Achievements/performance heading found but text too short")
+            
+            if not has_obj and not has_achievement:
+                print(f"  No sections found")
+        else:
+            accounts.at[i, "objectives_activities_text"] = None
+            accounts.at[i, "achievements_performance_text"] = None
+
+    return accounts

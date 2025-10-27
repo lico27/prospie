@@ -43,3 +43,42 @@ def ocr_accounts(pdf_path):
     except Exception as e:
         print(f"Error processing {pdf_path}: {e}")
         return False
+    
+def extract_after_para(para_pattern, text):
+    """
+    Extracts content that appears after a Para reference until next Para or section
+    """
+    match = re.search(para_pattern, text, re.IGNORECASE)
+    if not match:
+        return None
+    
+    start = match.end()
+    next_para = re.search(r'\nPara\s+\d+\.\d+', text[start:])
+    
+    if next_para:
+        #estimate end of content
+        tentative_end = start + next_para.start()
+        chunk_before_para = text[max(start, tentative_end - 400):tentative_end]
+        
+        #use common patterns used in following sections
+        desc_pattern = r'\n(Summary of|Policy on|Contribution made|Additional|Whether|Other)[^\n]*$'
+        desc_match = re.search(desc_pattern, chunk_before_para, re.IGNORECASE)
+        
+        if desc_match:
+            #use actual end if content found otherwise use estimate
+            actual_end = max(start, tentative_end - 400) + desc_match.start()
+            content = text[start:actual_end]
+        else:
+            content = text[start:tentative_end]
+    else:
+        #try and find heading if not found
+        section_match = re.search(r'\n\n[A-Z][a-zA-Z\s]+\n', text[start:start+2000])
+        if section_match:
+            content = text[start:start + section_match.start()]
+        else:
+            #use reasonable estimate of length
+            content = text[start:start + 1500]
+    
+    content = content.strip()
+    return content if len(content) >= 20 else None
+
