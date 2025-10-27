@@ -1,6 +1,6 @@
 import json
 import traceback
-from accounts_pipeline import get_accounts, save_accounts
+from accounts_pipeline import accounts_pipeline
 
 
 if __name__ == "__main__":
@@ -13,9 +13,7 @@ if __name__ == "__main__":
 
         c_nums = ["1061180", "1157483"]
 
-        #download and save accounts locally
-        accounts = get_accounts(c_nums)
-        accounts = save_accounts(accounts)
+        accounts_pipeline(c_nums)
 
 
 
