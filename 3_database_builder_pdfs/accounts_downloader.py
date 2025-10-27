@@ -96,26 +96,62 @@ def get_accounts_urls(c_nums):
     return accounts
 
 def download_accounts(url, path):
-    
+
     if url is not None:
 
         #only download if file doesn't already exist
         if os.path.exists(path):
             print(f"File already exists, skipping: {path}")
             return True
-        
+
         #create directory if it doesn't exist
         os.makedirs(os.path.dirname(path), exist_ok=True)
-        
+
         #download with headers
         headers = {"User-Agent": "Mozilla/5.0"}
         response = requests.get(url, headers=headers)
         response.raise_for_status()
-        
+
         #write binary content to file
         with open(path, "wb") as f:
             f.write(response.content)
-        
+
         return True
     return False
+
+def get_accounts(c_nums):
+    accounts = get_accounts_urls(c_nums)
+    return accounts
+
+def save_accounts(accounts):
+    from utils import ocr_accounts
+
+    for i, row in accounts.iterrows():
+        accounts_url = row["url"]
+        registered_num = row["registered_num"]
+        year = row["year_end"]
+
+        #only download if url exists
+        if accounts_url is not None:
+            try:
+                #download accounts
+                save_path = f"accounts/{registered_num}_{year}.pdf"
+                success = download_accounts(accounts_url, save_path)
+
+                #add to df if successful
+                if success:
+                    accounts.at[i, "file_path"] = save_path
+            except Exception as e:
+                accounts.at[i, "file_path"] = None
+        else:
+            #no url available
+            accounts.at[i, "file_path"] = None
+
+    #loop through downloaded accounts and run ocr
+    for i, row in accounts.iterrows():
+        file_path = row.get("file_path")
+        if file_path and os.path.exists(file_path):
+            ocr_accounts(file_path)
+
+    return accounts
 

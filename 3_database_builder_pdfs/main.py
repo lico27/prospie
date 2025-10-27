@@ -1,6 +1,6 @@
 import json
 import traceback
-from accounts_pipeline import accounts_pipeline
+from accounts_pipeline import get_accounts_data
 
 
 if __name__ == "__main__":
@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
         c_nums = ["1061180", "1157483"]
 
-        accounts = accounts_pipeline(c_nums)
+        accounts = get_accounts_data(c_nums)
 
         print(accounts.head())
 

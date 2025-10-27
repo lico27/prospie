@@ -1,6 +1,5 @@
 import pdfplumber
 import fitz
-import re
 from utils import check_accounts
 from sections_extractor import find_sections_by_sorp, find_sections_by_regex
 
@@ -41,7 +40,7 @@ def get_accounts_text(pdf_path, accounts_df, index):
         print(f"Error extracting text from {pdf_path}: {e}")
         accounts_df.at[index, "accounts_text"] = None
 
-def find_accounts_sections(df):
+def get_accounts_sections(df):
     """
     Checks accounts for objectives & activities, achievements & performance, and grant policy sections - or variously worded/formatted versions thereof.
     First checks for tables containing SORP references for accounts that use Charity Commission's CC17a form, then uses regex if SORP references not found.
@@ -53,14 +52,12 @@ def find_accounts_sections(df):
         text = df.at[i, "accounts_text"]
 
         if text:
-            # Try SORP first
+            #look for sorp references
             has_obj, obj_text, has_achievement, achievement_text, has_policy, policy_text = find_sections_by_sorp(text)
 
-            # Use regex as fallback for any sections not found by SORP
+            #use regex where sorp is not present
             if not has_obj or not has_achievement or not has_policy:
                 regex_has_obj, regex_obj_text, regex_has_achievement, regex_achievement_text, regex_has_policy, regex_policy_text = find_sections_by_regex(text)
-
-                # Only use regex results if SORP didn't find them
                 if not has_obj:
                     has_obj = regex_has_obj
                     obj_text = regex_obj_text
