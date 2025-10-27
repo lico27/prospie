@@ -67,7 +67,7 @@ def clean_data(tables, title_cols, sentence_cols, int_cols):
             tables[i].loc[tables[i]["website"].notnull(), "website"] = tables[i].loc[tables[i]["website"].notnull(), "website"].apply(format_website)
 
         #remove 'the' from organisation names
-        for col in ["funder_name", "recipient_name"]:
+        for col in ["name", "funder_name", "recipient_name"]:
             if col in tables[i].columns:
                 def remove_leading_the(name):
                     if isinstance(name, str) and name.startswith("The "):

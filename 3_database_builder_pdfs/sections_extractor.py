@@ -1,5 +1,5 @@
 import re
-from utils import extract_after_para
+from utils import extract_after_para, find_next_section
 
 def find_sections_by_sorp(text):
     """
@@ -13,7 +13,7 @@ def find_sections_by_sorp(text):
     has_policy = False
 
     #check if objectives/activities sorp references are present
-    for para_ref in [r'Para\s+1\.17(?:\s+and\s+1\.19)?', r'Para\s+1\.18', r'Para\s+1\.19']:
+    for para_ref in [r"Para\s+1\.17(?:\s+and\s+1\.19)?", r"Para\s+1\.18", r"Para\s+1\.19"]:
         content = extract_after_para(para_ref, text)
         if content:
             has_obj = True
@@ -23,13 +23,13 @@ def find_sections_by_sorp(text):
                 obj_text = content
     
     #check if achievements/performance sorp reference is present
-    achievement_content = extract_after_para(r'Para\s+1\.20', text)
+    achievement_content = extract_after_para(r"Para\s+1\.20", text)
     if achievement_content:
         has_achievement = True
         achievement_text = achievement_content
 
     #check if grant policy sorp reference is present
-    policy_content = extract_after_para(r'Para\s+1\.38', text)
+    policy_content = extract_after_para(r"Para\s+1\.38", text)
     if policy_content:
         has_policy = True
         policy_text = policy_content
@@ -49,20 +49,26 @@ def find_sections_by_regex(text):
         (?:public\s+benefit)?
         \s*(?:\n|$)"""
 
-    combined_match = re.search(combined_pattern, text, re.VERBOSE)
+    combined_matches = re.finditer(combined_pattern, text, re.VERBOSE)
 
     #get section following combined heading
-    if combined_match:
-        start_pos = combined_match.end()
-        next_section_pattern = r"\n\s*([A-Z][A-Za-z\s'\"]{10,})\s*\n"
-        next_section = re.search(next_section_pattern, text[start_pos:])
+    for combined_match in combined_matches:
+        matched_line = combined_match.group().strip()
+        if len(matched_line) > 80:
+            continue
 
-        if next_section:
-            end_pos = start_pos + next_section.start()
+        sentence_indicators = r'\b(has|have|will|established|provides?|makes?|gives?|the\s+\w+\s+(is|are|has|have))\b'
+        if re.search(sentence_indicators, matched_line, re.IGNORECASE):
+            continue
+        
+        start_pos = combined_match.end()
+        end_pos = find_next_section(text, start_pos)
+        
+        if end_pos:
             combined_text = text[start_pos:end_pos]
         else:
             combined_text = text[start_pos:start_pos + 2000]
-
+        
         combined_text = combined_text.strip()
 
         if len(combined_text) >= 20:
@@ -106,16 +112,13 @@ def find_sections_by_regex(text):
     if obj_match:
         has_obj = True
         start_pos = obj_match.end()
-
-        next_section_pattern = r"\n\s*([A-Z][A-Za-z\s'\"]{10,})\s*\n"
-        next_section = re.search(next_section_pattern, text[start_pos:])
-
-        if next_section:
-            end_pos = start_pos + next_section.start()
+        end_pos = find_next_section(text, start_pos)
+        
+        if end_pos:
             obj_text = text[start_pos:end_pos]
         else:
             obj_text = text[start_pos:start_pos + 2000]
-
+        
         obj_text = obj_text.strip()
         if len(obj_text) < 20:
             obj_text = None
@@ -125,12 +128,9 @@ def find_sections_by_regex(text):
     if achievement_match:
         has_achievement = True
         start_pos = achievement_match.end()
-
-        next_section_pattern = r"\n\s*([A-Z][A-Za-z\s'\"]{10,})\s*\n"
-        next_section = re.search(next_section_pattern, text[start_pos:])
-
-        if next_section:
-            end_pos = start_pos + next_section.start()
+        end_pos = find_next_section(text, start_pos)
+        
+        if end_pos:
             achievement_text = text[start_pos:end_pos]
         else:
             achievement_text = text[start_pos:start_pos + 2000]
@@ -144,12 +144,9 @@ def find_sections_by_regex(text):
     if policy_match:
         has_policy = True
         start_pos = policy_match.end()
+        end_pos = find_next_section(text, start_pos)
 
-        next_section_pattern = r"\n\s*([A-Z][A-Za-z\s'\"]{10,})\s*\n"
-        next_section = re.search(next_section_pattern, text[start_pos:])
-
-        if next_section:
-            end_pos = start_pos + next_section.start()
+        if end_pos:
             policy_text = text[start_pos:end_pos]
         else:
             policy_text = text[start_pos:start_pos + 2000]
