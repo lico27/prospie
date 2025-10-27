@@ -46,13 +46,20 @@ def ocr_accounts(pdf_path):
     
 def extract_after_para(para_pattern, text):
     """
-    Extracts content that appears after a Para reference until next Para or section
+    Extracts content from text after a given paragraph reference.
+    Checks for empty cells in CC17a form.
     """
     match = re.search(para_pattern, text, re.IGNORECASE)
     if not match:
         return None
-    
+
     start = match.end()
+
+    #check for empty cell
+    next_content = text[start:start+100].strip()
+    if next_content.startswith("Para ") or re.match(r"^[A-Z]*\d+[A-Z]*\s*$", next_content.split("\n")[0]):
+        return None
+
     next_para = re.search(r'\nPara\s+\d+\.\d+', text[start:])
     
     if next_para:

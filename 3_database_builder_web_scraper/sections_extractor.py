@@ -9,6 +9,8 @@ def find_sections_by_sorp(text):
     achievement_text = None
     has_obj = False
     has_achievement = False
+    policy_text = None
+    has_policy = False
 
     #check if objectives/activities sorp references are present
     for para_ref in [r'Para\s+1\.17(?:\s+and\s+1\.19)?', r'Para\s+1\.18', r'Para\s+1\.19']:
@@ -25,14 +27,135 @@ def find_sections_by_sorp(text):
     if achievement_content:
         has_achievement = True
         achievement_text = achievement_content
-    
+
+    #check if grant policy sorp reference is present
+    policy_content = extract_after_para(r'Para\s+1\.38', text)
+    if policy_content:
+        has_policy = True
+        policy_text = policy_content
+
     #return data found by sorp reference
-    if has_obj or has_achievement:
-        return has_obj, obj_text, has_achievement, achievement_text
-    else:
-        return False, None, False, None
+    return has_obj, obj_text, has_achievement, achievement_text, has_policy, policy_text
     
 def find_sections_by_regex(text):
+    """
+    Finds required sections in documents where SORP references are not present. Matches variable formats of headings using regex.
+    """
+    #check for combined heading
+    combined_pattern = r"""(?i)(?:^|\n)\s*
+        (?=.*?(?:object(?:ive)?s?|activit(?:y|ies)))
+        (?=.*?(?:achieve(?:ment|ments)?|performances?|results?))
+        [^\n]{0,150}?
+        (?:public\s+benefit)?
+        \s*(?:\n|$)"""
 
-    
-    return has_obj, obj_text, has_achievement, achievement_text
+    combined_match = re.search(combined_pattern, text, re.VERBOSE)
+
+    #get section following combined heading
+    if combined_match:
+        start_pos = combined_match.end()
+        next_section_pattern = r"\n\s*([A-Z][A-Za-z\s'\"]{10,})\s*\n"
+        next_section = re.search(next_section_pattern, text[start_pos:])
+
+        if next_section:
+            end_pos = start_pos + next_section.start()
+            combined_text = text[start_pos:end_pos]
+        else:
+            combined_text = text[start_pos:start_pos + 2000]
+
+        combined_text = combined_text.strip()
+
+        if len(combined_text) >= 20:
+            return True, combined_text, True, combined_text, False, None
+        else:
+            return True, None, True, None, False, None
+
+    #check for separate headings
+    obj_act_pattern = r"""(?i)(?:^|\n)\s*(?:
+        (?:object(?:ive)?s?)|
+        (?:activit(?:y|ies))|
+        (?:(?:object(?:ive)?s?)[\s\&\-]*(?:and|&)[\s\&\-]*(?:activit(?:y|ies)))|
+        (?:(?:activit(?:y|ies))[\s\&\-]*(?:and|&)[\s\&\-]*(?:object(?:ive)?s?))
+    )(?:.{0,40}?public\s+benefit)?\s*(?:\n|$)"""
+
+    ach_perf_pattern = r"""(?i)(?:^|\n)\s*(?:
+        (?:achieve(?:ment|ments)?)|
+        (?:performances?)|
+        (?:results?)
+    )(?:\s*(?:and|&|\/|,)?\s*(?:achieve(?:ment|ments)?|performances?|results?))*\s*(?:\n|$)"""
+
+    pol_pattern = r"""(?i)(?:^|\n)\s*(?:
+        polic(?:y|ies)\s+(?:for|on)\s+(?:grants?|donations?)(?:[\s\-]+(?:giving|making))?
+        |
+        (?:grants?|donations?)(?:[\s\-]+(?:giving|making))?\s+polic(?:y|ies)
+        |
+        strateg(?:y|ies)\s+(?:for|on)\s+(?:grants?|donations?)(?:[\s\-]+(?:giving|making))?
+        |
+        (?:grants?|donations?)(?:[\s\-]+(?:giving|making))?\s+strateg(?:y|ies)
+    )\s*(?:\n|$)"""
+
+    has_obj = False
+    obj_text = None
+    has_achievement = False
+    achievement_text = None
+    has_policy = False
+    policy_text = None
+
+    #get objectives/activities section
+    obj_match = re.search(obj_act_pattern, text, re.VERBOSE)
+    if obj_match:
+        has_obj = True
+        start_pos = obj_match.end()
+
+        next_section_pattern = r"\n\s*([A-Z][A-Za-z\s'\"]{10,})\s*\n"
+        next_section = re.search(next_section_pattern, text[start_pos:])
+
+        if next_section:
+            end_pos = start_pos + next_section.start()
+            obj_text = text[start_pos:end_pos]
+        else:
+            obj_text = text[start_pos:start_pos + 2000]
+
+        obj_text = obj_text.strip()
+        if len(obj_text) < 20:
+            obj_text = None
+
+    #get achievements/performance section
+    achievement_match = re.search(ach_perf_pattern, text, re.VERBOSE)
+    if achievement_match:
+        has_achievement = True
+        start_pos = achievement_match.end()
+
+        next_section_pattern = r"\n\s*([A-Z][A-Za-z\s'\"]{10,})\s*\n"
+        next_section = re.search(next_section_pattern, text[start_pos:])
+
+        if next_section:
+            end_pos = start_pos + next_section.start()
+            achievement_text = text[start_pos:end_pos]
+        else:
+            achievement_text = text[start_pos:start_pos + 2000]
+
+        achievement_text = achievement_text.strip()
+        if len(achievement_text) < 20:
+            achievement_text = None
+
+    #get grant policy section
+    policy_match = re.search(pol_pattern, text, re.VERBOSE)
+    if policy_match:
+        has_policy = True
+        start_pos = policy_match.end()
+
+        next_section_pattern = r"\n\s*([A-Z][A-Za-z\s'\"]{10,})\s*\n"
+        next_section = re.search(next_section_pattern, text[start_pos:])
+
+        if next_section:
+            end_pos = start_pos + next_section.start()
+            policy_text = text[start_pos:end_pos]
+        else:
+            policy_text = text[start_pos:start_pos + 2000]
+
+        policy_text = policy_text.strip()
+        if len(policy_text) < 20:
+            policy_text = None
+
+    return has_obj, obj_text, has_achievement, achievement_text, has_policy, policy_text

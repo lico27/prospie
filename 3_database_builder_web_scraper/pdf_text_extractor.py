@@ -41,26 +41,43 @@ def get_accounts_text(pdf_path, accounts_df, index):
         print(f"Error extracting text from {pdf_path}: {e}")
         accounts_df.at[index, "accounts_text"] = None
 
-def find_accounts_sections(pdf_path, text):
+def find_accounts_sections(df):
     """
-    Checks accounts for objectives & activities and achievements & performance sections - or variously worded/formatted versions thereof.
+    Checks accounts for objectives & activities, achievements & performance, and grant policy sections - or variously worded/formatted versions thereof.
     First checks for tables containing SORP references for accounts that use Charity Commission's CC17a form, then uses regex if SORP references not found.
-    Returns boolean confirmation of the required sections, and their text if it exists.
+    Processes each row in the dataframe and saves results.
     """
-    if not text:
-        return False, None, False, None
-    
 
+    #loop through accounts to find objectives/activities, achievements/performance, and grant policy
+    for i, row in df.iterrows():
+        text = df.at[i, "accounts_text"]
 
-    #get required sections trying sorp first
-    has_obj, obj_text, has_achievement, achievement_text = find_sections_by_sorp(text)
-    if not has_obj or not has_achievement:
-        regex_has_obj, regex_obj_text, regex_has_achievement, regex_achievement_text = find_sections_by_regex(text)
-        if not has_obj:
-            has_obj = regex_has_obj
-            obj_text = regex_obj_text
-        if not has_achievement:
-            has_achievement = regex_has_achievement
-            achievement_text = regex_achievement_text
+        if text:
+            # Try SORP first
+            has_obj, obj_text, has_achievement, achievement_text, has_policy, policy_text = find_sections_by_sorp(text)
 
-    return has_obj, obj_text, has_achievement, achievement_text
+            # Use regex as fallback for any sections not found by SORP
+            if not has_obj or not has_achievement or not has_policy:
+                regex_has_obj, regex_obj_text, regex_has_achievement, regex_achievement_text, regex_has_policy, regex_policy_text = find_sections_by_regex(text)
+
+                # Only use regex results if SORP didn't find them
+                if not has_obj:
+                    has_obj = regex_has_obj
+                    obj_text = regex_obj_text
+                if not has_achievement:
+                    has_achievement = regex_has_achievement
+                    achievement_text = regex_achievement_text
+                if not has_policy:
+                    has_policy = regex_has_policy
+                    policy_text = regex_policy_text
+
+            #save results
+            df.at[i, "objectives_activities_text"] = obj_text
+            df.at[i, "achievements_performance_text"] = achievement_text
+            df.at[i, "grant_policy_text"] = policy_text
+        else:
+            df.at[i, "objectives_activities_text"] = None
+            df.at[i, "achievements_performance_text"] = None
+            df.at[i, "grant_policy_text"] = None
+
+    return df
