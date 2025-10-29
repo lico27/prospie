@@ -19,5 +19,10 @@ def get_accounts_data(c_nums):
     
     #extract important sections from each document
     accounts = get_accounts_sections(accounts)
+
+    accounts = accounts.rename(columns={"objectives_activities_text": "objectives_activities",
+                                        "achievements_performance_text": "achievements_performance",
+                                        "grant_policy_text": "grant_policy"}
+                                        ).drop(columns=["accounts_text", "file_path", "accounts_accessed"])
    
     return accounts
