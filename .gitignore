@@ -43,3 +43,4 @@ myenv/
 __pycache__/
 
 /accounts
+2_database_builder_apis/cc_api/publicextract.charity.json

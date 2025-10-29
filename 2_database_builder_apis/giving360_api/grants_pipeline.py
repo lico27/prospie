@@ -21,14 +21,14 @@ def get_grant_data(c_nums):
 
                 #handle empty grants list
                 if not grants or len(grants) == 0:
-                        empty_grants = pd.DataFrame(columns=["grant_id", "grant_title", "grant_desc", "amount", "currency", "year"])
+                        empty_grants = pd.DataFrame(columns=["grant_id", "grant_title", "grant_desc", "amount", "year"])
                         empty_funder_grants = pd.DataFrame(columns=["grant_id", "registered_num"])
                         empty_recipient_grants = pd.DataFrame(columns=["grant_id", "recipient_id"])
                         empty_recipients_info = pd.DataFrame(columns=["recipient_id", "recipient_name", "recipient_activities"])
                         return empty_grants, empty_funder_grants, empty_recipient_grants, empty_recipients_info
 
                 df = pd.json_normalize(grants)
-                grant_columns = ["grant_id", "funder_registered_num", "data.title", "data.description", "data.amountAwarded", "data.currency", "data.awardDate", "data.recipientOrganization"]
+                grant_columns = ["grant_id", "funder_registered_num", "data.title", "data.description", "data.amountAwarded", "data.awardDate", "data.recipientOrganization"]
                 grant_df = df[grant_columns]
         except Exception as e:
                 print(f"Error with initial API call: {e}")
@@ -56,7 +56,6 @@ def get_grant_data(c_nums):
                         "data.title",
                         "data.description",
                         "data.amountAwarded",
-                        "data.currency",
                         "recipient_id",
                         "recipient_name",
                         "recipient_description"
@@ -74,7 +73,6 @@ def get_grant_data(c_nums):
                 grants = grants.rename(columns={"data.title": "grant_title",
                                                 "data.description": "grant_desc",
                                                 "data.amountAwarded": "amount",
-                                                "data.currency": "currency",
                                                 "data.awardDate": "year"
                                                 })
                 grants["recipient_id"] = grants["recipient_id"].fillna('').astype(str).str.replace("^GB-CHC-", "", regex=True)

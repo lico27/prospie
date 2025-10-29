@@ -11,7 +11,7 @@ key = os.getenv("SUPABASE_KEY")
 #create client instance
 supabase = create_client(url, key)
 
-def pipe_to_supabase(df, table, unique_key):
+def pipe_to_supabase(df, table, unique_key, batch_size=1000):
 
     #check if dataframe is empty
     if df.empty or len(df) == 0:
@@ -36,14 +36,23 @@ def pipe_to_supabase(df, table, unique_key):
     #make df into dictionaries to be readable by supabase
     records = df.to_dict("records")
 
+    #batch upsert for large datasets
+    total_records = len(records)
+    total_batches = (total_records + batch_size - 1) // batch_size
+
     try:
-        #pipe df to supabase
-        response = (
-            supabase.table(table)
-            .upsert(records, on_conflict = unique_key)
-            .execute()
-        )
-        print(f"✓ Successfully upserted {len(records)} records to {table}")
+        for i in range(0, total_records, batch_size):
+            batch = records[i:i + batch_size]
+            batch_num = (i // batch_size) + 1
+
+            #pipe batch to supabase
+            response = (
+                supabase.table(table)
+                .upsert(batch, on_conflict = unique_key)
+                .execute()
+            )
+            
+        print(f"✓ Successfully upserted all {total_records} records to {table}")
     except Exception as e:
-        print(f"✗ Error upserting to {table}: {e}")
+        print(f"✗ Error upserting to {table} at batch {batch_num}: {e}")
         raise

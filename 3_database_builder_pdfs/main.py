@@ -1,4 +1,3 @@
-import json
 import traceback
 from accounts_pipeline import get_accounts_data
 
