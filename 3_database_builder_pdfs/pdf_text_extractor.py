@@ -1,7 +1,7 @@
 import pdfplumber
 import fitz
 from utils import check_accounts
-from sections_extractor import find_sections_by_sorp, find_sections_by_regex
+from sections_and_grants_extractor import find_sections_by_sorp, find_sections_by_regex
 
 def get_accounts_text(pdf_path, accounts_df, index):
     """ 

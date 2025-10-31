@@ -1,5 +1,14 @@
 import re
+import anthropic
+import pandas as pd
+import json
+import os
+from dotenv import load_dotenv
 from utils import extract_after_para, find_next_section
+
+#get key from env
+load_dotenv()
+api_key = os.getenv("ANTHROPIC_KEY")
 
 def find_sections_by_sorp(text):
     """
@@ -156,3 +165,89 @@ def find_sections_by_regex(text):
             policy_text = None
 
     return has_obj, obj_text, has_achievement, achievement_text, has_policy, policy_text
+
+def find_grants(api_key, pdf_text):
+       
+  client = anthropic.Anthropic(api_key=api_key)
+  prompt = f"""Your task is to extract grant information from this charity's annual accounts, which are unstructured and potentially multiple-page PDFs. 
+
+  Look for:
+  1. Individual grants: recipient name and amount. These may be under a header such as "Grants to Institutions", "Grants Payable", "Charitable Activities", etc. 
+  2. Category totals: if only aggregate data is given (e.g. "£3,000 to children/young people")
+
+  Return JSON in this exact format:
+  {{
+    "individual_grants": [
+      {{
+        "recipient_name": "string",
+        "amount": number
+      }}
+    ],
+    "category_totals": [
+      {{
+        "category": "string",
+        "amount": number
+      }}
+    ]
+  }}
+
+CRITICAL RULES: Only include grants you can clearly locate in the document.
+- ONLY extract grants that are EXPLICITLY stated in the text
+- DO NOT infer, estimate, or generate any grants
+- DO NOT make up recipient names or amounts
+- DO NOT generate plausible-sounding grants
+- If you cannot find clear grant information, return empty arrays
+- It is BETTER to return nothing than to include uncertain information
+- When in doubt, leave it out
+- If no grants are listed, that is a valid result - return empty arrays
+- You are in STRICT EXTRACTION MODE
+
+EXTRACTION RULES:
+- Extract ALL grants with recipient names
+- Extract category totals ONLY if broken down by theme/cause
+- SKIP if only a single total is given (e.g. "Total grants: £50,000")
+- Amounts as numbers only (5000 not "£5,000")
+- Respond with ONLY valid JSON, no markdown
+- Extract information from the most recent year only
+
+  ACCOUNTS TEXT:
+  {pdf_text}
+  """
+
+  try:
+    message = client.messages.create(
+          model="claude-3-haiku-20240307",
+          max_tokens=4000,
+          messages=[{"role": "user", "content": prompt}]
+      )
+
+    response_text = message.content[0].text
+
+    #remove markdown created by claude
+    if response_text.startswith('```json'):
+      response_text = response_text[7:]
+    if response_text.startswith('```'):
+      response_text = response_text[3:]
+    if response_text.endswith('```'):
+      response_text = response_text[:-3]
+
+    response_text = response_text.strip()
+
+    #get json only
+    first_brace = response_text.find('{')
+    last_brace = response_text.rfind('}')
+    
+    if first_brace == -1 or last_brace == -1:
+      return {"individual_grants": [], "category_totals": []}
+    json_text = response_text[first_brace:last_brace + 1]
+    if not json_text:
+      return {"individual_grants": [], "category_totals": []}
+
+    return json.loads(json_text)
+    
+  except json.JSONDecodeError as e:
+    print(f"JSOn parsing failed - {e}.")
+    return {"individual_grants": [], "category_totals": []}
+  except Exception as e:
+    print(f"Error calling API - {e}.")
+    return {"individual_grants": [], "category_totals": []}
