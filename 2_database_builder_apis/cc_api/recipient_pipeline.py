@@ -84,7 +84,7 @@ def get_recipient_data(recipient_grants, recipients_info, areas):
 
 	#clean data
 	cc_recipient_tables = [recipients, recipient_areas]
-	clean_tables_recipients = clean_data(cc_recipient_tables, ["recipient_name"], ["recipient_activities"], [])
+	clean_tables_recipients = clean_data(cc_recipient_tables, ["recipient_name","recipient_activities"], [])
 	recipients, recipient_areas = clean_tables_recipients
 
 	#add non-charity recipients using actual data from 360Giving API

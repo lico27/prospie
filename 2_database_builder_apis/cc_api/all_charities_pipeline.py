@@ -47,7 +47,7 @@ def get_all_charities():
     })
 
     #clean data
-    cleaned_tables = clean_data([potential_recipients], ["recipient_name"], ["recipient_activities"], [])
+    cleaned_tables = clean_data([potential_recipients], ["recipient_name", "recipient_activities"], [])
     potential_recipients = cleaned_tables[0]
 
     return potential_recipients

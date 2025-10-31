@@ -1,24 +1,8 @@
 import pandas as pd
 
-def clean_data(tables, title_cols, sentence_cols, int_cols):
+def clean_data(tables, upper_cols, int_cols):
     """
-    Cleans data across multiple tables by standardizing formats and handling null values.
-
-    Parameters
-    ----------
-    tables : list of DataFrames
-        List of dataframes to clean
-    title_cols : list of str
-        Column names that should be converted to title case
-    sentence_cols : list of str
-        Column names that should be converted to sentence case
-    int_cols : list of str
-        Column names that should be converted to integers
-
-    Returns
-    -------
-    list of DataFrames
-        The cleaned dataframes in the same order as input
+    Cleans data 
     """
     for i in range(len(tables)):
         #convert nans into json-readable nulls
@@ -35,16 +19,10 @@ def clean_data(tables, title_cols, sentence_cols, int_cols):
                     return x
                 tables[i][col] = tables[i][col].apply(clean_string)
 
-        #change to title case for relevant columns
-        for col in title_cols:
+        #change to uppercase for relevant columns
+        for col in upper_cols:
             if col in tables[i].columns:
-                tables[i].loc[:, col] = tables[i][col].fillna("").astype(str).str.strip().str.title()
-                tables[i].loc[tables[i][col] == "", col] = None
-
-        #change to sentence case for relevant columns
-        for col in sentence_cols:
-            if col in tables[i].columns:
-                tables[i].loc[:, col] = tables[i][col].fillna("").astype(str).str.strip().str.capitalize()
+                tables[i].loc[:, col] = tables[i][col].fillna("").astype(str).str.strip().str.upper()
                 tables[i].loc[tables[i][col] == "", col] = None
 
         #change to int for relevant columns

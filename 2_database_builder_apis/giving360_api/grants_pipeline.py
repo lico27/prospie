@@ -96,7 +96,7 @@ def get_grant_data(c_nums):
 
         #clean data
         g360_tables = [grants, funder_grants, recipient_grants, recipients_info]
-        clean_tables_grants = clean_data(g360_tables, ["grant_title", "recipient_name"], ["grant_desc", "recipient_activities"], ["year"])
+        clean_tables_grants = clean_data(g360_tables, ["grant_title", "recipient_name", "grant_desc", "recipient_activities"], ["year"])
         grants, funder_grants, recipient_grants, recipients_info = clean_tables_grants
 
         return grants, funder_grants, recipient_grants, recipients_info

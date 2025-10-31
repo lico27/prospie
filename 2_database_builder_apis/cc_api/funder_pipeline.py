@@ -37,7 +37,7 @@ def get_funder_data(c_nums):
 
 	#clean data
 	cc_funder_tables = [funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas]
-	clean_tables_funders = clean_data(cc_funder_tables, ["name"], ["activities", "objectives"], [])
+	clean_tables_funders = clean_data(cc_funder_tables, ["name", "activities", "objectives"], [])
 	funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas = clean_tables_funders
 
 	return funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas
