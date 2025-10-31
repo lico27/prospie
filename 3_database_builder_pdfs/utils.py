@@ -101,3 +101,33 @@ def find_next_section(text, start_pos):
             return start_pos + match.start()
         
         return None
+
+def clean_tables(df, cols):
+    for col in cols:
+        if col in df.columns:
+            df.loc[:, col] = (df[col]
+                                    .fillna("")
+                                    .astype(str)
+                                    .str.replace('\n', ' ', regex=False)
+                                    .str.strip()
+                                    .str.upper())
+            df.loc[df[col] == "", col] = None
+    return df
+
+def clean_dictionaries(list_of_dicts):
+    if not list_of_dicts or not isinstance(list_of_dicts, list):
+        return list_of_dicts
+    
+    cleaned_dicts = []
+    for item in list_of_dicts:
+        if isinstance(item, dict):
+            new_item = {}
+            for key, value in item.items():
+                if isinstance(value, str):
+                    new_item[key] = value.replace('\n', ' ').strip().upper()
+                else:
+                    new_item[key] = value
+            cleaned_dicts.append(new_item)
+        else:
+            cleaned_dicts.append(item)
+    return cleaned_dicts
