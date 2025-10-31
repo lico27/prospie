@@ -38,7 +38,6 @@ def pipe_to_supabase(df, table, unique_key, batch_size=1000):
 
     #batch upsert for large datasets
     total_records = len(records)
-    total_batches = (total_records + batch_size - 1) // batch_size
 
     try:
         for i in range(0, total_records, batch_size):
@@ -46,11 +45,7 @@ def pipe_to_supabase(df, table, unique_key, batch_size=1000):
             batch_num = (i // batch_size) + 1
 
             #pipe batch to supabase
-            response = (
-                supabase.table(table)
-                .upsert(batch, on_conflict = unique_key)
-                .execute()
-            )
+            supabase.table(table).upsert(batch, on_conflict = unique_key).execute()
             
         print(f"✓ Successfully upserted all {total_records} records to {table}")
     except Exception as e:

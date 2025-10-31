@@ -3,7 +3,6 @@ import os
 import traceback
 from tables_builder import get_data
 from data_importer import pipe_to_supabase
-from cc_api.all_charities_pipeline import get_all_charities
 
 if __name__ == "__main__":
     try:
