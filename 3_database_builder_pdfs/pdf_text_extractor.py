@@ -1,7 +1,8 @@
 import pdfplumber
 import fitz
+import pandas as pd
 from utils import check_accounts
-from sections_and_grants_extractor import find_sections_by_sorp, find_sections_by_regex
+from sections_and_grants_extractor import find_sections_by_sorp, find_sections_by_regex, find_grants
 
 def get_accounts_text(pdf_path, accounts_df, index):
     """ 
@@ -78,3 +79,27 @@ def get_accounts_sections(df):
             df.at[i, "grant_policy_text"] = None
 
     return df
+
+def get_previous_grants(api_key, df):
+
+    #make new columns if needed
+    if "individual_grants" not in df.columns:
+        df["individual_grants"] = pd.Series(dtype="object")
+    if "category_totals" not in df.columns:
+        df["category_totals"] = pd.Series(dtype="object")
+
+    #get grants info from each set of accounts
+    for i, row in df.iterrows():
+        text = df.at[i, "accounts_text"]
+        
+        if text:
+            grants_data = find_grants(api_key, text)
+            df.at[i, "individual_grants"] = grants_data.get("individual_grants", [])
+            df.at[i, "category_totals"] = grants_data.get("category_totals", [])
+        else:
+            df.at[i, "individual_grants"] = []
+            df.at[i, "category_totals"] = []
+
+    return df
+
+

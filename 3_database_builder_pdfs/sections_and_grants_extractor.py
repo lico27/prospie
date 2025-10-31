@@ -6,9 +6,7 @@ import os
 from dotenv import load_dotenv
 from utils import extract_after_para, find_next_section
 
-#get key from env
-load_dotenv()
-api_key = os.getenv("ANTHROPIC_KEY")
+
 
 def find_sections_by_sorp(text):
     """
@@ -66,7 +64,7 @@ def find_sections_by_regex(text):
         if len(matched_line) > 80:
             continue
 
-        sentence_indicators = r'\b(has|have|will|established|provides?|makes?|gives?|the\s+\w+\s+(is|are|has|have))\b'
+        sentence_indicators = r"\b(has|have|will|established|provides?|makes?|gives?|the\s+\w+\s+(is|are|has|have))\b"
         if re.search(sentence_indicators, matched_line, re.IGNORECASE):
             continue
         
@@ -224,18 +222,18 @@ EXTRACTION RULES:
     response_text = message.content[0].text
 
     #remove markdown created by claude
-    if response_text.startswith('```json'):
+    if response_text.startswith("```json"):
       response_text = response_text[7:]
-    if response_text.startswith('```'):
+    if response_text.startswith("```"):
       response_text = response_text[3:]
-    if response_text.endswith('```'):
+    if response_text.endswith("```"):
       response_text = response_text[:-3]
 
     response_text = response_text.strip()
 
     #get json only
-    first_brace = response_text.find('{')
-    last_brace = response_text.rfind('}')
+    first_brace = response_text.find("{")
+    last_brace = response_text.rfind("}")
     
     if first_brace == -1 or last_brace == -1:
       return {"individual_grants": [], "category_totals": []}

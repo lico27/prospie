@@ -1,6 +1,11 @@
 import traceback
+import os
+from dotenv import load_dotenv
 from accounts_pipeline import get_accounts_data
 
+#get key from env
+load_dotenv()
+anthropic_key = os.getenv("ANTHROPIC_KEY")
 
 if __name__ == "__main__":
     try:
@@ -12,7 +17,7 @@ if __name__ == "__main__":
 
         c_nums = ["1061180", "1157483"]
 
-        accounts = get_accounts_data(c_nums)
+        accounts = get_accounts_data(c_nums, anthropic_key)
 
         print(accounts.head())
 
