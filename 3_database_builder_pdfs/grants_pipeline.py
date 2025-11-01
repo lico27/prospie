@@ -1,4 +1,5 @@
 import pandas as pd
+from supabase import create_client
 
 def build_grants_table(df):
     grants_list = []
@@ -51,5 +52,123 @@ def build_recipients_table(df):
 
     return recipients
 
-def sync_grants_with_supabase(df):
-    pass
+def build_recipient_grants_table(recipients, grants, key, url):
+    
+    supabase = create_client(url, key)
+
+    #find existing pdf ids and batch
+    all_pdf_ids = []
+    page_size = 1000
+    offset = 0
+
+    while True:
+        result = supabase.table("recipients")\
+            .select("recipient_id")\
+            .like("recipient_id", "PDF-%")\
+            .range(offset, offset + page_size - 1)\
+            .execute()
+        
+        if not result.data:
+            break
+        
+        all_pdf_ids.extend([r["recipient_id"] for r in result.data])
+        offset += page_size
+        
+        if len(result.data) < page_size:
+            break
+
+    #find max existing pdf id and start counter
+    max_counter = 0
+    for pdf_id in all_pdf_ids:
+        try:
+            num_part = pdf_id.replace("PDF-", "")
+            counter = int(num_part)
+            if counter > max_counter:
+                max_counter = counter
+        except (ValueError, AttributeError):
+            continue
+    new_recipient_counter = max_counter + 1
+
+    #get recipient names from database and batch
+    recipient_names = [row["recipient_name"] for _, row in recipients.iterrows()]
+    batch_size = 100
+    existing_recipients = []
+
+    for i in range(0, len(recipient_names), batch_size):
+        batch_names = recipient_names[i:i+batch_size]
+        
+        try:
+            result = supabase.table("recipients")\
+                .select("recipient_id, recipient_name")\
+                .in_("recipient_name", batch_names)\
+                .execute()
+            
+            if result.data:
+                existing_recipients.extend(result.data)
+        except Exception as e:
+            print(f"Error querying batch {i//batch_size + 1}: {e}")
+
+    #get ids from names and create mapping
+    id_from_name = {r["recipient_name"]: r["recipient_id"] for r in existing_recipients}
+
+    #insert new recipients
+    recipients_for_upsert = []
+
+    for i, recipient_row in recipients.iterrows():
+        recipient_name = recipient_row["recipient_name"]
+        recipient_activities = recipient_row["recipient_activities"]
+        
+        if recipient_name in id_from_name:
+            recipient_id = id_from_name[recipient_name]
+        else:
+            recipient_id = f"PDF-{new_recipient_counter:06d}"
+            new_recipient_counter += 1
+            id_from_name[recipient_name] = recipient_id
+            
+            recipients_for_upsert.append({
+                "recipient_id": recipient_id,
+                "recipient_name": recipient_name,
+                "recipient_activities": recipient_activities
+            })
+
+    #upsert recipients to database
+    if recipients_for_upsert:
+        try:
+            upsert_result = supabase.table("recipients").upsert(
+                recipients_for_upsert,
+                on_conflict="recipient_id"
+            ).execute()
+        except Exception as e:
+            print(f"Error upserting recipients: {e}")
+
+    print(f"Mapped {len(id_from_name)} recipient names to IDs")
+
+    #build the join table
+
+    recipient_grants_list = []
+
+    for _, grant_row in grants.iterrows():
+        grant_id = grant_row["grant_id"]
+        recipient_name = grant_row["recipient_name"]
+        
+        #skip if empty/na
+        if not recipient_name or not str(recipient_name).strip():
+            continue
+        
+        #get actual id from mapping
+        if recipient_name in id_from_name:
+            recipient_id = id_from_name[recipient_name]
+            
+            recipient_grants_list.append({
+                "grant_id": grant_id,
+                "recipient_id": recipient_id
+            })
+        else:
+            print(f"No recipient_id found for {recipient_name} in grant {grant_id}")
+
+    #create dataframe
+    recipient_grants = pd.DataFrame(recipient_grants_list)
+    print(f"Created {len(recipient_grants)} recipient_grants records")
+    print(f"Linked {len(grants)} grants to recipients")
+
+    return recipient_grants
