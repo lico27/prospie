@@ -169,6 +169,16 @@ def find_grants(api_key, pdf_text):
   1. Individual grants: recipient name and amount. These may be under a header such as "Grants to Institutions", "Grants Payable", "Charitable Activities", etc. 
   2. Category totals: if only aggregate data is given (e.g. "£3,000 to children/young people")
 
+  IMPORTANT CONTEXT:
+  Some charities exist solely to raise funds for a single organization (e.g., a school PTA, church fundraising committee). 
+  These accounts may list PURCHASES or ITEMS BOUGHT for their cause, NOT grants to external recipients. If the list contains OBJECTS/ITEMS (equipment, furniture, events, services), these are NOT grant recipients
+
+  YOU MUST DISTINGUISH BETWEEN:
+  1. GRANTS TO OTHER ORGANISATIONS: Money given to external charities/organisations (e.g., "£5,000 to Age UK")
+    → EXTRACT THESE
+  2. PURCHASES/ITEMS FOR OWN CAUSE: Items bought for the charity's own purpose (e.g., "Netball post protectors", "New piano for church")
+    → DO NOT EXTRACT THESE
+
   Return JSON in this exact format:
   {{
     "individual_grants": [
@@ -187,6 +197,9 @@ def find_grants(api_key, pdf_text):
 
 CRITICAL RULES: Only include grants you can clearly locate in the document.
 - ONLY extract grants that are EXPLICITLY stated in the text
+- ONLY extract if recipients are EXTERNAL ORGANISATIONS, not items/purchases. If the charity appears to be a fundraising arm for a single cause → carefully check if they give external grants
+- Recipient name MUST be a SPECIFIC organisation name (e.g., "Age UK", "British Red Cross")
+- SKIP vague/generic descriptions like: "Five charities", "Various organisations", "Multiple recipients", "Unspecified charities", "Sundry donations"
 - DO NOT infer, estimate, or generate any grants
 - DO NOT make up recipient names or amounts
 - DO NOT generate plausible-sounding grants
