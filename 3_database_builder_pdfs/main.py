@@ -2,7 +2,7 @@ import traceback
 import os
 import pandas as pd
 from dotenv import load_dotenv
-from accounts_pipeline import get_accounts_data
+from tables_builder import get_data
 
 #get key from env
 load_dotenv()
@@ -18,12 +18,12 @@ if __name__ == "__main__":
 
         c_nums = ["1061180", "1157483"]
 
-        accounts = get_accounts_data(c_nums, anthropic_key)
+        grants, recipients = get_data(c_nums, anthropic_key)
 
-        pd.set_option('display.max_rows', None) #remove these after testing
-        pd.set_option('display.max_columns', None)
+        # pd.set_option('display.max_rows', None) #remove these after testing
+        # pd.set_option('display.max_columns', None)
 
-        print(accounts.head())
+        # print(accounts.head())
 
         print("\n✓ Pipeline completed successfully!")
 
