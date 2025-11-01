@@ -46,6 +46,9 @@ def get_all_charities():
         "charity_activities": "recipient_activities"
     })
 
+    #add boolean check
+    potential_recipients["is_recipient"] = False
+
     #clean data
     cleaned_tables = clean_data([potential_recipients], ["recipient_name", "recipient_activities"], [])
     potential_recipients = cleaned_tables[0]
