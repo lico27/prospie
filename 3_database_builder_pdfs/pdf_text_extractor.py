@@ -1,6 +1,7 @@
 import pdfplumber
 import fitz
 import pandas as pd
+import time
 from utils import check_accounts
 from sections_and_grants_extractor import find_sections_by_sorp, find_sections_by_regex, find_grants
 
@@ -89,16 +90,25 @@ def get_previous_grants(api_key, df):
         df["category_totals"] = pd.Series(dtype="object")
 
     #get grants info from each set of accounts
+    total_accounts = len(df)
+    processed = 0
+
     for i, row in df.iterrows():
         text = df.at[i, "accounts_text"]
-        
         if text:
+            print(f"  Extracting grants {processed + 1}/{total_accounts}...")
             grants_data = find_grants(api_key, text)
             df.at[i, "individual_grants"] = grants_data.get("individual_grants", [])
             df.at[i, "category_totals"] = grants_data.get("category_totals", [])
+
+            #limit requests
+            if processed < total_accounts - 1:
+                time.sleep(1.3)
         else:
             df.at[i, "individual_grants"] = []
             df.at[i, "category_totals"] = []
+
+        processed += 1
 
     return df
 
