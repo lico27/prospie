@@ -12,4 +12,7 @@ def get_data(c_nums, api_key, supabase_key, supabase_url):
     #build recipient_grants tables
     recipient_grants = build_recipient_grants_table(recipients, grants, supabase_key, supabase_url)
 
-    return grants, recipients, recipient_grants
+    #drop temporary columns
+    grants = grants.drop(columns=["charity_num", "recipient_name"], errors="ignore")
+
+    return grants, recipient_grants

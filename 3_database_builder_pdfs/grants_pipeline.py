@@ -146,7 +146,6 @@ def build_recipient_grants_table(recipients, grants, key, url):
     print(f"Mapped {len(id_from_name)} recipient names to IDs")
 
     #build the join table
-
     recipient_grants_list = []
 
     for _, grant_row in grants.iterrows():

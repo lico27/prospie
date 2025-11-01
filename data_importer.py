@@ -11,18 +11,18 @@ def pipe_to_supabase(df, table, unique_key, url, key, batch_size=1000):
         return
 
     #parse unique key columns
-    unique_cols = [col.strip() for col in unique_key.split(',')]
+    unique_cols = [col.strip() for col in unique_key.split(",")]
 
     #check for duplicates based on unique key
     duplicates_before = df.duplicated(subset=unique_cols, keep=False).sum()
 
     if duplicates_before > 0:
         #keep first occurrence of each duplicate
-        df = df.drop_duplicates(subset=unique_cols, keep='first')
+        df = df.drop_duplicates(subset=unique_cols, keep="first")
 
     #convert ints
     for col in df.columns:
-        if df[col].dtype == 'Int64':
+        if df[col].dtype == "Int64":
             df[col] = df[col].apply(lambda x: int(x) if pd.notna(x) else None)
 
     #make df into dictionaries to be readable by supabase

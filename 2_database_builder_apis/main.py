@@ -1,8 +1,12 @@
 import json
 import os
+import sys
 import traceback
 from dotenv import load_dotenv
 from tables_builder import get_data
+
+#add project root to path for data_importer import
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from data_importer import pipe_to_supabase
 
 #get keys from env
