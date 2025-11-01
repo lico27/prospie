@@ -132,15 +132,26 @@ def clean_dictionaries(list_of_dicts):
             new_item = {}
             for key, value in item.items():
                 if isinstance(value, str):
-                    #convert numbers to floats then clean strings
+                    #convert numbers to floats and clean/uppercase strings
                     try:
                         new_item[key] = float(value)
                     except (ValueError, TypeError):
                         new_item[key] = value.replace('\n', ' ').strip().upper()
                 elif isinstance(value, (int, float)):
-                    new_item[key] = value
+                    new_item[key] = float(value)
                 else:
                     new_item[key] = value
+
+            #ensure financial figures are positive
+            if "amount" in new_item and isinstance(new_item["amount"], (int, float)):
+                if new_item["amount"] < 0:
+                    new_item["amount"] = None
+
+            #remove 'the' from organisation names
+            for key in ["name", "funder_name", "recipient_name"]:
+                if key in new_item and isinstance(new_item[key], str) and new_item[key].startswith("THE "):
+                    new_item[key] = new_item[key][4:]
+
             cleaned_dicts.append(new_item)
         else:
             cleaned_dicts.append(item)
