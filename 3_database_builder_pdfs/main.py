@@ -22,20 +22,14 @@ if __name__ == "__main__":
         sample_file = os.path.join(os.path.dirname(__file__), "..", "1_sample_generator", "sample_charity_numbers.json")
         with open(sample_file, 'r') as f:
             sample_data = json.load(f)
-        c_nums = sample_data["charity_numbers"][45:50]
+        c_nums = sample_data["charity_numbers"][60:65]
 
-        # c_nums = ["1061180", "1157483"]
-
-        grants, recipient_grants = get_data(c_nums, anthropic_key, supabase_key, supabase_url)
-
-        # pd.set_option('display.max_rows', None) #remove these after testing
-        # pd.set_option('display.max_columns', None)
-
-        # print(accounts.head())
+        grants, funder_grants, recipient_grants = get_data(c_nums, anthropic_key, supabase_key, supabase_url)
 
         #dictionary to hold tables and their keys
         tables = {
             "grants": (grants, "grant_id"),
+            "funder_grants": (funder_grants, "registered_num,grant_id"),
             "recipient_grants": (recipient_grants, "recipient_id,grant_id"),
         }
 

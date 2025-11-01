@@ -1,5 +1,5 @@
 from accounts_pipeline import get_accounts_data
-from grants_pipeline import build_grants_table, build_recipients_table, build_recipient_grants_table
+from grants_pipeline import build_grants_table, build_funder_grants_table, build_recipients_table, build_recipient_grants_table
 def get_data(c_nums, api_key, supabase_key, supabase_url):
 
     #get clean dataframe extracted from accounts pdfs
@@ -7,6 +7,7 @@ def get_data(c_nums, api_key, supabase_key, supabase_url):
 
     #build grants and recipients tables from lists extracted from accounts
     grants = build_grants_table(accounts)
+    funder_grants = build_funder_grants_table(grants)
     recipients = build_recipients_table(grants)
 
     #build recipient_grants tables
@@ -15,4 +16,4 @@ def get_data(c_nums, api_key, supabase_key, supabase_url):
     #drop temporary columns
     grants = grants.drop(columns=["charity_num", "recipient_name"], errors="ignore")
 
-    return grants, recipient_grants
+    return grants, funder_grants, recipient_grants

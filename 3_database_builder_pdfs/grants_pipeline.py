@@ -34,6 +34,15 @@ def build_grants_table(df):
 
     return grants
 
+def build_funder_grants_table(df):
+    #build funder_grants join table from grants
+    funder_grants = df[["charity_num", "grant_id"]].copy()
+    funder_grants = funder_grants.rename(columns={"charity_num": "registered_num"})
+    funder_grants = funder_grants.drop_duplicates()
+    print(f"Created {len(funder_grants)} funder_grants records")
+
+    return funder_grants
+
 def build_recipients_table(df):
     #get unique recipient names and filter for nones
     unique_recipients = df["recipient_name"].unique()
@@ -46,7 +55,7 @@ def build_recipients_table(df):
             "recipient_activities": None
         })
 
-    #create dataframe 
+    #create dataframe
     recipients = pd.DataFrame(recipients_list)
     print(f"Created {len(recipients)} recipient records")
 
@@ -96,17 +105,23 @@ def build_recipient_grants_table(recipients, grants, key, url):
 
     for i in range(0, len(recipient_names), batch_size):
         batch_names = recipient_names[i:i+batch_size]
-        
+
         try:
             result = supabase.table("recipients")\
                 .select("recipient_id, recipient_name")\
                 .in_("recipient_name", batch_names)\
                 .execute()
-            
+
             if result.data:
                 existing_recipients.extend(result.data)
         except Exception as e:
-            print(f"Error querying batch {i//batch_size + 1}: {e}")
+            error_msg = str(e)
+            if "statement timeout" in error_msg.lower():
+                print(f"Warning: Query timeout on batch {i//batch_size + 1}. Consider adding an index on recipient_name column.")
+                print(f"SQL: CREATE INDEX IF NOT EXISTS idx_recipients_name ON recipients(recipient_name);")
+            else:
+                print(f"Error querying batch {i//batch_size + 1}: {e}")
+            #continue processing even if query fails - will create new IDs for these recipients
 
     #get ids from names and create mapping
     id_from_name = {r["recipient_name"]: r["recipient_id"] for r in existing_recipients}
