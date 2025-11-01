@@ -1,5 +1,6 @@
 import re
 import ocrmypdf
+import pandas as pd
 
 def check_accounts(accounts_content):
 
@@ -103,6 +104,8 @@ def find_next_section(text, start_pos):
         return None
 
 def clean_tables(df, cols):
+
+    #clean strings
     for col in cols:
         if col in df.columns:
             df.loc[:, col] = (df[col]
@@ -112,19 +115,30 @@ def clean_tables(df, cols):
                                     .str.strip()
                                     .str.upper())
             df.loc[df[col] == "", col] = None
+
+    #convert year to int if present
+    if "year" in df.columns:
+        df.loc[:, "year"] = pd.to_numeric(df["year"], errors="coerce").astype("Int64")
+
     return df
 
 def clean_dictionaries(list_of_dicts):
     if not list_of_dicts or not isinstance(list_of_dicts, list):
         return list_of_dicts
-    
+
     cleaned_dicts = []
     for item in list_of_dicts:
         if isinstance(item, dict):
             new_item = {}
             for key, value in item.items():
                 if isinstance(value, str):
-                    new_item[key] = value.replace('\n', ' ').strip().upper()
+                    #convert numbers to floats then clean strings
+                    try:
+                        new_item[key] = float(value)
+                    except (ValueError, TypeError):
+                        new_item[key] = value.replace('\n', ' ').strip().upper()
+                elif isinstance(value, (int, float)):
+                    new_item[key] = value
                 else:
                     new_item[key] = value
             cleaned_dicts.append(new_item)

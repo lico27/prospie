@@ -1,6 +1,7 @@
 import os
 from accounts_downloader import get_accounts, save_accounts
 from pdf_text_extractor import get_accounts_text, get_accounts_sections, get_previous_grants
+from utils import clean_tables, clean_dictionaries
 
 def get_accounts_data(c_nums, api_key):
     
@@ -23,9 +24,17 @@ def get_accounts_data(c_nums, api_key):
     #extract information about previous grants declared by the funder
     accounts = get_previous_grants(api_key, accounts)
 
-    accounts = accounts.rename(columns={"objectives_activities_text": "objectives_activities",
+    #tidy and clean dataframe ready to be imported
+    accounts = accounts.rename(columns={"year_end": "year",
+                                        "objectives_activities_text": "objectives_activities",
                                         "achievements_performance_text": "achievements_performance",
                                         "grant_policy_text": "grant_policy"}
                                         ).drop(columns=["accounts_text", "file_path", "accounts_accessed"])
-   
+    
+    accounts = clean_tables(accounts, ["objectives_activities", "achievements_performance", "grant_policy"])
+
+    for i, row in accounts.iterrows():
+        accounts.at[i, "individual_grants"] = clean_dictionaries(row["individual_grants"])
+        accounts.at[i, "category_totals"] = clean_dictionaries(row["category_totals"])
+
     return accounts
