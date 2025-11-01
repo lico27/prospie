@@ -117,19 +117,21 @@ def build_recipient_grants_table(recipients, grants, key, url):
     for i, recipient_row in recipients.iterrows():
         recipient_name = recipient_row["recipient_name"]
         recipient_activities = recipient_row["recipient_activities"]
-        
+
         if recipient_name in id_from_name:
             recipient_id = id_from_name[recipient_name]
         else:
             recipient_id = f"PDF-{new_recipient_counter:06d}"
             new_recipient_counter += 1
             id_from_name[recipient_name] = recipient_id
-            
-            recipients_for_upsert.append({
-                "recipient_id": recipient_id,
-                "recipient_name": recipient_name,
-                "recipient_activities": recipient_activities
-            })
+
+        #upsert all recipients to set is_recipient = True
+        recipients_for_upsert.append({
+            "recipient_id": recipient_id,
+            "recipient_name": recipient_name,
+            "recipient_activities": recipient_activities,
+            "is_recipient": True
+        })
 
     #upsert recipients to database
     if recipients_for_upsert:

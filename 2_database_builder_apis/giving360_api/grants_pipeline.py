@@ -86,6 +86,7 @@ def get_grant_data(c_nums):
                 #build recipients info table for non-charity recipients
                 #keep first occurrence of each recipient_id to avoid duplicates
                 recipients_info = grants[["recipient_id", "recipient_name", "recipient_activities"]].drop_duplicates(subset=["recipient_id"], keep="first")
+                recipients_info["is_recipient"] = True
 
                 #drop unnecessary columns from grants table
                 grants = grants.drop(columns=["recipient_id", "recipient_name", "recipient_activities"])

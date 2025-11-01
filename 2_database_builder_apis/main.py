@@ -13,10 +13,12 @@ supabase_key = os.getenv("SUPABASE_KEY")
 if __name__ == "__main__":
     try:
         #load charity numbers from sample
-        sample_file = os.path.join(os.path.dirname(__file__), "..", "1_sample_generator", "sample_charity_numbers.json")
-        with open(sample_file, 'r') as f:
-            sample_data = json.load(f)
-        c_nums = sample_data["charity_numbers"][:5]
+        # sample_file = os.path.join(os.path.dirname(__file__), "..", "1_sample_generator", "sample_charity_numbers.json")
+        # with open(sample_file, 'r') as f:
+        #     sample_data = json.load(f)
+        # c_nums = sample_data["charity_numbers"][:5]
+
+        c_nums = ["1093844"]
 
         #get data
         funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas, grants, funder_grants, recipients, recipient_grants, recipient_areas, potential_recipients = get_data(c_nums, supabase_url, supabase_key)

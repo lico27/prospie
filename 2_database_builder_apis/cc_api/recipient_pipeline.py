@@ -81,6 +81,7 @@ def get_recipient_data(recipient_grants, recipients_info, areas):
 	#build recipient table
 	recipients = recipient_df[["registered_num", "charity_name", "activities"]]
 	recipients = recipients.rename(columns={"registered_num": "recipient_id", "charity_name": "recipient_name", "activities": "recipient_activities"})
+	recipients["is_recipient"] = True
 
 	#clean data
 	cc_recipient_tables = [recipients, recipient_areas]
