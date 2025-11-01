@@ -1,4 +1,5 @@
 import pandas as pd
+from supabase import create_client
 from cc_api.transformers import ensure_area_columns
 
 def transform_area_columns(df):
@@ -91,12 +92,32 @@ def transform_area_columns(df):
 
     return areas, all_areas
 
-def build_areas_tables(df):
+def build_areas_tables(df, supabase_url, supabase_key):
 
     areas, all_areas = transform_area_columns(df)
 
-    #create unique ids for areas
-    areas["area_id"] = range(401, 401 + len(areas))
+    #connect to supabase and query existing area ids
+
+    supabase = create_client(supabase_url, supabase_key)
+
+    try:
+        #fetch all existing ids from database
+        result = supabase.table("areas").select("area_id").execute()
+
+        if result.data and len(result.data) > 0:
+            #convert to int since database might return strings
+            existing_ids = [int(row["area_id"]) for row in result.data]
+            max_area_id = max(existing_ids)
+            next_area_id = max_area_id + 1
+        else:
+            #start from 1
+            next_area_id = 1
+    except Exception as e:
+        print(f"Warning: Could not fetch existing area_ids from database, starting from 1")
+        next_area_id = 1
+
+    #create unique ids for areas starting from next available id
+    areas["area_id"] = range(next_area_id, next_area_id + len(areas))
 
     #build join table
     funder_areas = all_areas.merge(

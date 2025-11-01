@@ -1,8 +1,14 @@
 import json
 import os
 import traceback
+from dotenv import load_dotenv
 from tables_builder import get_data
 from data_importer import pipe_to_supabase
+
+#get keys from env
+load_dotenv()
+supabase_url = os.getenv("SUPABASE_URL")
+supabase_key = os.getenv("SUPABASE_KEY")
 
 if __name__ == "__main__":
     try:
@@ -13,7 +19,7 @@ if __name__ == "__main__":
         c_nums = sample_data["charity_numbers"][:5]
 
         #get data
-        funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas, grants, funder_grants, recipients, recipient_grants, recipient_areas, potential_recipients = get_data(c_nums)
+        funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas, grants, funder_grants, recipients, recipient_grants, recipient_areas, potential_recipients = get_data(c_nums, supabase_url, supabase_key)
 
         #dictionary to hold tables and their keys
         tables = {
@@ -34,7 +40,7 @@ if __name__ == "__main__":
 
         #pipe data to supabase
         for table_name, (df, unique_key) in tables.items():
-            pipe_to_supabase(df, table_name, unique_key)
+            pipe_to_supabase(df, table_name, unique_key, supabase_url, supabase_key)
 
         print("\n✓ Pipeline completed successfully!")
 

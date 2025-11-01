@@ -8,7 +8,7 @@ from cc_api.areas_builder import build_areas_tables
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from utils import clean_data
 
-def get_funder_data(c_nums):
+def get_funder_data(c_nums, supabase_url, supabase_key):
 
 	df = extract_cc_data(c_nums)
 
@@ -33,7 +33,7 @@ def get_funder_data(c_nums):
 	beneficiaries, funder_beneficiaries, causes, funder_causes = build_classifications_tables(df)
 
 	#build areas table and join table
-	funder_areas, areas = build_areas_tables(df)
+	funder_areas, areas = build_areas_tables(df, supabase_url, supabase_key)
 
 	#clean data
 	cc_funder_tables = [funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas]

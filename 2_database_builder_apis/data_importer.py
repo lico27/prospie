@@ -1,17 +1,10 @@
 import pandas as pd
-import os
-from dotenv import load_dotenv
 from supabase import create_client
 
-#get keys from env
-load_dotenv()
-url = os.getenv("SUPABASE_URL")
-key = os.getenv("SUPABASE_KEY")
+def pipe_to_supabase(df, table, unique_key, url, key, batch_size=1000):
 
-#create client instance
-supabase = create_client(url, key)
-
-def pipe_to_supabase(df, table, unique_key, batch_size=1000):
+    #create client instance
+    supabase = create_client(url, key)
 
     #check if dataframe is empty
     if df.empty or len(df) == 0:
@@ -21,7 +14,6 @@ def pipe_to_supabase(df, table, unique_key, batch_size=1000):
     unique_cols = [col.strip() for col in unique_key.split(',')]
 
     #check for duplicates based on unique key
-    original_count = len(df)
     duplicates_before = df.duplicated(subset=unique_cols, keep=False).sum()
 
     if duplicates_before > 0:
