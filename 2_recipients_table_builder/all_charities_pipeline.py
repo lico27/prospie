@@ -10,7 +10,7 @@ from utils import clean_data
 def get_all_charities():
     #load json file and filter for registered charities
     registered_charities = []
-    json_path = os.path.join(os.path.dirname(__file__), "..", "2_database_builder_apis", "cc_api", "publicextract.charity.json")
+    json_path = os.path.join(os.path.dirname(__file__), "publicextract.charity.json")
     with open(json_path, "r", encoding="utf-8-sig") as f:
         first_line = f.readline().strip()
 
