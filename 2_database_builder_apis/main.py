@@ -25,7 +25,7 @@ if __name__ == "__main__":
         c_nums = ["1093844"]
 
         #get data
-        funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas, grants, funder_grants, recipients, recipient_grants, recipient_areas, potential_recipients = get_data(c_nums, supabase_url, supabase_key)
+        funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas, grants, funder_grants, recipients, recipient_grants, recipient_areas = get_data(c_nums, supabase_url, supabase_key)
 
         #dictionary to hold tables and their keys
         tables = {
@@ -35,7 +35,6 @@ if __name__ == "__main__":
             "areas": (areas, "area_id"),
             "grants": (grants, "grant_id"),
             "recipients": (recipients, "recipient_id"),
-            #"recipients": (potential_recipients, "recipient_id"),
             "funder_beneficiaries": (funder_beneficiaries, "registered_num,ben_id"),
             "funder_causes": (funder_causes, "registered_num,cause_id"),
             "funder_areas": (funder_areas, "registered_num,area_id"),
