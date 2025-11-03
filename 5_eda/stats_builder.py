@@ -1,19 +1,9 @@
 import pandas as pd
 
-
-def add_gbp_columns(x):
-    """
-    Adds a new column with currency formatted in GBP.
-    """
-    return f"£{x:,.2f}" if pd.notnull(x) else ""
-
-def explode_lists(df, col):
-    """
-    Explodes a list column to create one row per list item.
-    """
-    return df.explode(col).dropna(subset=[col])
-
 def make_summary_df(funders_df, grants_df):
+    """
+    Creates a dictionary of summary statistics for funders and grants.
+    """
     summary_data = {
         "Metric": [
             "Total funders",
@@ -39,7 +29,7 @@ def make_summary_df(funders_df, grants_df):
             "Standard deviation",
             "Smallest grant",
             "Largest grant",
-            
+
         ],
         "Value": [
             len(funders_df["registered_num"].unique()),
@@ -69,7 +59,67 @@ def make_summary_df(funders_df, grants_df):
     }
     return summary_data
 
+def calculate_stats(funders_df, grants_df):
+    """
+    Calculates advanced statistics for funders and grants.
+    Returns a tuple of 7 calculated values.
+    """
+    # Top 10% funders share
+    percentile_90_funders = funders_df[funders_df["num_grants"] >= funders_df["num_grants"].quantile(0.9)]
+    top_funders_share = (percentile_90_funders["num_grants"].sum() / funders_df["num_grants"].sum()) * 100
+
+    # Top 10% recipients share
+    recipient_totals = grants_df.groupby("recipient_id")["amount"].sum()
+    percentile_90_recipients = recipient_totals[recipient_totals >= recipient_totals.quantile(0.9)].sum()
+    top_recipients_share = (percentile_90_recipients / grants_df["amount"].sum()) * 100
+
+    # Repeat grants percentage
+    funder_recipient_pairs = grants_df.groupby(["funder_num", "recipient_id"])["grant_id"].count()
+    repeat_grants = (funder_recipient_pairs > 1).sum()
+    total_pairs = len(funder_recipient_pairs)
+    repeat_grants_pct = (repeat_grants / total_pairs) * 100
+
+    # Average grants per funder-recipient pair
+    avg_grants_per_pair = funder_recipient_pairs.mean()
+
+    # Grants to income ratios
+    grants_last_year = grants_df[grants_df["year"] == grants_df["year"].max()].groupby("funder_num")["amount"].sum()
+    giving_ratios = funders_df.set_index("registered_num")[["income"]].copy()
+    giving_ratios["grants_last_year"] = grants_last_year
+    giving_ratios["grants_to_income_ratio"] = (giving_ratios["grants_last_year"] / giving_ratios["income"]) * 100
+    get_ratios = giving_ratios.loc[(giving_ratios["income"] > 0) & (giving_ratios["grants_to_income_ratio"].notna()),"grants_to_income_ratio"]
+    mean_grants_to_income = get_ratios.mean()
+    median_grants_to_income = get_ratios.median()
+
+    # General Charitable Purposes only percentage
+    gcp_funders = funders_df[(funders_df['causes'].apply(len) == 1) & (funders_df['causes'].apply(lambda x: '101' in x))]
+    gcp_pct = (len(gcp_funders) / len(funders_df)) * 100
+
+    return top_funders_share, top_recipients_share, repeat_grants_pct, avg_grants_per_pair, mean_grants_to_income, median_grants_to_income, gcp_pct
+
+def make_calculated_df(stats):
+    """
+    Creates a dictionary of calculated statistics.
+    Takes a tuple/list of 7 calculated values from calculate_stats().
+    """
+    calculated_data = {
+        "Metric":
+        ["Share of grants from top 10% funders (by income)",
+        "Share of grants to top 10% recipients (by grant value)",
+        "Percent of recipients with multiple grants from same funder",
+        "Average grants per funder-recipient pair",
+        "Mean grants-to-income ratio (%)",
+        "Median grants-to-income ratio (%)",
+        "Percent of funders supporting General Charitable Purposes only",
+        ],
+        "Value": stats
+    }
+    return calculated_data
+
 def format_stats(row):
+    """
+    Formats statistics values based on their metric type.
+    """
     if row["Metric"] == "Range of grants received":
         return row["Value"]
     elif row["Metric"] in ["Mean recipients per funder", "Mean areas per funder", "Mean grants per recipient"]:
@@ -78,7 +128,7 @@ def format_stats(row):
         return f"£{row['Value']:,.2f}"
     elif row["Metric"] in ["Largest funder by income", "Largest funder by expenditure", "Recipient of largest grant"]:
         return row['Value'].title()
-    elif row["Metric"] in ["Share of grants from top 10% funders (by income)", "Share of grants to top 10% recipients (by grant value)", "Percent of recipients with multiple grants from same funder"]:
+    elif row["Metric"] in ["Share of grants from top 10% funders (by income)", "Share of grants to top 10% recipients (by grant value)", "Percent of recipients with multiple grants from same funder", "Percent of funders supporting General Charitable Purposes only"]:
         return f"{row['Value']:,.1f}%"
     else:
         return f"{row['Value']:,.0f}"
