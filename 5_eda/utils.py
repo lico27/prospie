@@ -78,5 +78,7 @@ def format_stats(row):
         return f"£{row['Value']:,.2f}"
     elif row["Metric"] in ["Largest funder by income", "Largest funder by expenditure", "Recipient of largest grant"]:
         return row['Value'].title()
+    elif row["Metric"] in ["Share of grants from top 10% funders (by income)", "Share of grants to top 10% recipients (by grant value)", "Percent of recipients with multiple grants from same funder"]:
+        return f"{row['Value']:,.1f}%"
     else:
         return f"{row['Value']:,.0f}"
