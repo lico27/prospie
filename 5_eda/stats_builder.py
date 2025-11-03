@@ -1,4 +1,5 @@
 import pandas as pd
+from IPython.display import display
 
 def make_summary_df(funders_df, grants_df):
     """
@@ -108,27 +109,54 @@ def make_calculated_df(stats):
         "Share of grants to top 10% recipients (by grant value)",
         "Percent of recipients with multiple grants from same funder",
         "Average grants per funder-recipient pair",
-        "Mean grants-to-income ratio (%)",
-        "Median grants-to-income ratio (%)",
+        "Mean grants-to-income ratio",
+        "Median grants-to-income ratio",
         "Percent of funders supporting General Charitable Purposes only",
         ],
         "Value": stats
     }
     return calculated_data
-
 def format_stats(row):
     """
     Formats statistics values based on their metric type.
     """
     if row["Metric"] == "Range of grants received":
         return row["Value"]
-    elif row["Metric"] in ["Mean recipients per funder", "Mean areas per funder", "Mean grants per recipient"]:
+    elif row["Metric"] in ["Mean recipients per funder", 
+                           "Mean areas per funder", 
+                           "Mean grants per recipient"]:
         return f"{row['Value']:,.1f}"
-    elif row["Metric"] in ["Total grant value", "Mean grant size", "Median grant size", "Smallest grant", "Largest grant", "Median funder income", "Median funder expenditure", "Mean funder income", "Mean funder expenditure", "Standard deviation"]:
+    elif row["Metric"] in ["Total grant value", 
+                           "Mean grant size", 
+                           "Median grant size", 
+                           "Smallest grant", 
+                           "Largest grant", 
+                           "Median funder income", 
+                           "Median funder expenditure", 
+                           "Mean funder income", 
+                           "Mean funder expenditure", 
+                           "Standard deviation"]:
         return f"£{row['Value']:,.2f}"
-    elif row["Metric"] in ["Largest funder by income", "Largest funder by expenditure", "Recipient of largest grant"]:
+    elif row["Metric"] in ["Largest funder by income", 
+                           "Largest funder by expenditure", 
+                           "Recipient of largest grant"]:
         return row['Value'].title()
-    elif row["Metric"] in ["Share of grants from top 10% funders (by income)", "Share of grants to top 10% recipients (by grant value)", "Percent of recipients with multiple grants from same funder", "Percent of funders supporting General Charitable Purposes only"]:
+    elif row["Metric"] in ["Share of grants from top 10% funders (by income)", 
+                           "Share of grants to top 10% recipients (by grant value)", 
+                           "Percent of recipients with multiple grants from same funder", 
+                           "Percent of funders supporting General Charitable Purposes only", 
+                           "Mean grants-to-income ratio",
+                           "Median grants-to-income ratio"]:
         return f"{row['Value']:,.1f}%"
     else:
         return f"{row['Value']:,.0f}"
+    
+def format_df(df):
+    display(df.style
+    .set_properties(**{"text-align": "left"})
+    .set_table_styles([
+        {"selector": "th", "props": [("font-weight", "bold"), ("text-align", "left"), ("border-bottom", "1px solid")]},
+        {"selector": "td", "props": [("padding", "6px")]}
+    ])
+    .hide(axis="index")
+)
