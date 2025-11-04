@@ -1,6 +1,7 @@
 import re
 import ocrmypdf
 import pandas as pd
+from supabase import create_client
 
 def check_accounts(accounts_content):
 

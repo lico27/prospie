@@ -24,13 +24,14 @@ if __name__ == "__main__":
             sample_data = json.load(f)
         c_nums = sample_data["charity_numbers"][60:65]
 
-        grants, funder_grants, recipient_grants = get_data(c_nums, anthropic_key, supabase_key, supabase_url)
+        grants, funder_grants, recipient_grants, funders = get_data(c_nums, anthropic_key, supabase_key, supabase_url)
 
         #dictionary to hold tables and their keys
         tables = {
             "grants": (grants, "grant_id"),
             "funder_grants": (funder_grants, "registered_num,grant_id"),
             "recipient_grants": (recipient_grants, "recipient_id,grant_id"),
+            "funders": (funders, "registered_num"),
         }
 
         #pipe data to supabase

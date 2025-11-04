@@ -16,4 +16,10 @@ def get_data(c_nums, api_key, supabase_key, supabase_url):
     #drop temporary columns
     grants = grants.drop(columns=["charity_num", "recipient_name"], errors="ignore")
 
-    return grants, funder_grants, recipient_grants
+    #prepare funders data with most recent year only
+    funders = accounts.copy()
+    funders["year"] = funders["year"].astype(str)
+    funders = funders.sort_values("year", ascending=False).drop_duplicates(subset=["registered_num"], keep="first")
+    funders = funders[["registered_num", "objectives_activities", "achievements_performance", "grant_policy"]]
+
+    return grants, funder_grants, recipient_grants, funders
