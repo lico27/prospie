@@ -25,6 +25,10 @@ def pipe_to_supabase(df, table, unique_key, url, key, batch_size=1000):
         if df[col].dtype == "Int64":
             df[col] = df[col].apply(lambda x: int(x) if pd.notna(x) else None)
 
+    #handle json non-compliance
+    df = df.replace([float('inf'), float('-inf')], None)
+    df = df.where(pd.notna(df), None)
+
     #make df into dictionaries to be readable by supabase
     records = df.to_dict("records")
 
