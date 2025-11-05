@@ -157,3 +157,21 @@ def clean_dictionaries(list_of_dicts):
         else:
             cleaned_dicts.append(item)
     return cleaned_dicts
+
+def get_360_funders(supabase_url, supabase_key):
+    """
+    Queries Supabase to find funders who report to 360Giving, in order to skip them in API grant extraction.
+    """
+    try:
+        supabase = create_client(supabase_url, supabase_key)
+        response = supabase.table("funder_grants").select("registered_num").execute()
+
+        if response.data:
+            #get unique charity numbers
+            skip_list = list(set([row["registered_num"] for row in response.data]))
+            return skip_list
+        return []
+    except Exception as e:
+        print(f"Warning: Could not query 360Giving funders from Supabase: {e}")
+        print("Proceeding without skip list...")
+        return []

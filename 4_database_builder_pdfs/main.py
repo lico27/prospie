@@ -5,6 +5,7 @@ import pandas as pd
 import json
 from dotenv import load_dotenv
 from tables_builder import get_data
+from utils import get_360_funders
 
 #add project root to path for data_importer import
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -19,12 +20,17 @@ supabase_key = os.getenv("SUPABASE_KEY")
 if __name__ == "__main__":
     try:
         #load charity numbers from sample
-        sample_file = os.path.join(os.path.dirname(__file__), "..", "1_sample_generator", "sample_charity_numbers.json")
-        with open(sample_file, 'r') as f:
-            sample_data = json.load(f)
-        c_nums = sample_data["charity_numbers"][60:65]
+        # sample_file = os.path.join(os.path.dirname(__file__), "..", "1_sample_generator", "sample_charity_numbers.json")
+        # with open(sample_file, 'r') as f:
+        #     sample_data = json.load(f)
+        # c_nums = sample_data["charity_numbers"][60:65]
 
-        grants, funder_grants, recipient_grants, funders = get_data(c_nums, anthropic_key, supabase_key, supabase_url)
+        c_nums = ["200051", "228447"]
+
+        #get list of funders with 360giving data
+        skip_list = get_360_funders(supabase_url, supabase_key)
+
+        grants, funder_grants, recipient_grants, funders = get_data(c_nums, anthropic_key, supabase_key, supabase_url, skip_list)
 
         #dictionary to hold tables and their keys
         tables = {

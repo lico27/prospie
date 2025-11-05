@@ -81,7 +81,7 @@ def get_accounts_sections(df):
 
     return df
 
-def get_previous_grants(api_key, df):
+def get_previous_grants(api_key, df, skip_list=None):
 
     #make new columns if needed
     if "individual_grants" not in df.columns:
@@ -92,9 +92,21 @@ def get_previous_grants(api_key, df):
     #get grants info from each set of accounts
     total_accounts = len(df)
     processed = 0
+    if skip_list is None:
+        skip_list = []
 
     for i, row in df.iterrows():
         text = df.at[i, "accounts_text"]
+        registered_num = row.get("registered_num")
+
+        #skip api call if funder already in 360giving data
+        if registered_num in skip_list:
+            print(f"  Skipping grant extraction for {registered_num} (already has 360Giving data)")
+            df.at[i, "individual_grants"] = []
+            df.at[i, "category_totals"] = []
+            processed += 1
+            continue
+
         if text:
             print(f"  Extracting grants {processed + 1}/{total_accounts}...")
             grants_data = find_grants(api_key, text)

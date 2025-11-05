@@ -3,8 +3,8 @@ from accounts_downloader import get_accounts, save_accounts
 from pdf_text_extractor import get_accounts_text, get_accounts_sections, get_previous_grants
 from utils import clean_tables, clean_dictionaries
 
-def get_accounts_data(c_nums, api_key):
-    
+def get_accounts_data(c_nums, api_key, skip_list=None):
+
     #download and save accounts locally
     accounts = get_accounts(c_nums)
     accounts = save_accounts(accounts)
@@ -17,12 +17,12 @@ def get_accounts_data(c_nums, api_key):
             get_accounts_text(file_path, accounts, i)
         else:
             accounts.at[i, "accounts_text"] = None
-    
+
     #extract important sections from each document
     accounts = get_accounts_sections(accounts)
 
     #extract information about previous grants declared by the funder
-    accounts = get_previous_grants(api_key, accounts)
+    accounts = get_previous_grants(api_key, accounts, skip_list)
 
     #tidy and clean dataframe ready to be imported
     accounts = accounts.rename(columns={"year_end": "year",
