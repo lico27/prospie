@@ -1,4 +1,6 @@
 import pandas as pd
+import numpy as np
+import json
 from supabase import create_client
 
 def pipe_to_supabase(df, table, unique_key, url, key, batch_size=1000):
@@ -26,11 +28,23 @@ def pipe_to_supabase(df, table, unique_key, url, key, batch_size=1000):
             df[col] = df[col].apply(lambda x: int(x) if pd.notna(x) else None)
 
     #handle json non-compliance
-    df = df.replace([float('inf'), float('-inf')], None)
+    for col in df.columns:
+        if df[col].dtype in ['float64', 'float32']:
+            #replace inf and -inf with None
+            df[col] = df[col].replace([np.inf, -np.inf], None)
+            #replace NaN with None
+            df[col] = df[col].apply(lambda x: None if pd.isna(x) or (isinstance(x, float) and not np.isfinite(x)) else x)
     df = df.where(pd.notna(df), None)
 
     #make df into dictionaries to be readable by supabase
     records = df.to_dict("records")
+
+    #additional json validation
+    for record in records:
+        for key, value in record.items():
+            if isinstance(value, float):
+                if np.isnan(value) or np.isinf(value):
+                    record[key] = None
 
     #batch upsert for large datasets
     total_records = len(records)
@@ -39,6 +53,13 @@ def pipe_to_supabase(df, table, unique_key, url, key, batch_size=1000):
         for i in range(0, total_records, batch_size):
             batch = records[i:i + batch_size]
             batch_num = (i // batch_size) + 1
+            
+            try:
+                json.dumps(batch)
+            except (ValueError, TypeError) as json_err:
+                print(f"JSON validation failed for batch {batch_num}: {json_err}")
+                print(f"First record in batch: {batch[0]}")
+                raise
 
             #pipe batch to supabase
             supabase.table(table).upsert(batch, on_conflict = unique_key).execute()
