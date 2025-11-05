@@ -170,7 +170,7 @@ def find_grants(api_key, pdf_text):
   2. Category totals: if only aggregate data is given (e.g. "£3,000 to children/young people")
 
   IMPORTANT CONTEXT:
-  Some charities exist solely to raise funds for a single organization (e.g., a school PTA, church fundraising committee). 
+  Some charities exist solely to raise funds for a single organisation (e.g., a school PTA, church fundraising committee). 
   These accounts may list PURCHASES or ITEMS BOUGHT for their cause, NOT grants to external recipients. If the list contains OBJECTS/ITEMS (equipment, furniture, events, services), these are NOT grant recipients
 
   YOU MUST DISTINGUISH BETWEEN:
