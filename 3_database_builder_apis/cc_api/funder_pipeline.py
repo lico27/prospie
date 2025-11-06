@@ -3,6 +3,7 @@ import os
 from cc_api.client import extract_cc_data
 from cc_api.classifications_builder import build_classifications_tables
 from cc_api.areas_builder import build_areas_tables
+from cc_api.financials_builder import build_financials_tables
 
 #add project root to path for utils import
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -35,9 +36,12 @@ def get_funder_data(c_nums, supabase_url, supabase_key):
 	#build areas table and join table
 	funder_areas, areas = build_areas_tables(df, supabase_url, supabase_key)
 
-	#clean data
-	cc_funder_tables = [funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas]
-	clean_tables_funders = clean_data(cc_funder_tables, ["name", "activities", "objectives"], [])
-	funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas = clean_tables_funders
+	#build financials table and join table
+	financials, funder_financials = build_financials_tables(c_nums)
 
-	return funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas
+	#clean data
+	cc_funder_tables = [funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas, financials, funder_financials]
+	clean_tables_funders = clean_data(cc_funder_tables, ["name", "activities", "objectives"], [])
+	funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas, financials, funder_financials = clean_tables_funders
+
+	return funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas, financials, funder_financials

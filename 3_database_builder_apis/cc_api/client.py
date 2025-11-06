@@ -106,10 +106,10 @@ def call_financial_history_api(c_nums):
 			if isinstance(data, list):
 				for year_data in data:
 					row = {
-						'reg_charity_number': num,
-						'financial_period_end_date': year_data.get('financial_period_end_date'),
-						'income': year_data.get('income'),
-						'expenditure': year_data.get('expenditure')
+						"reg_charity_number": num,
+						"financial_period_end_date": year_data.get("financial_period_end_date"),
+						"income": year_data.get("income"),
+						"expenditure": year_data.get("expenditure")
 					}
 					financial_data.append(row)
 
