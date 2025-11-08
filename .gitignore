@@ -43,4 +43,4 @@ myenv/
 __pycache__/
 
 /accounts
-*publicextract.charity.json
+*publicextract*
