@@ -49,10 +49,10 @@ if __name__ == "__main__":
         for table_name, (df, unique_key) in tables.items():
             pipe_to_supabase(df, table_name, unique_key, supabase_url, supabase_key)
 
-        print("\n✓ Pipeline completed successfully!")
+        print("Pipeline completed successfully")
 
     except Exception as e:
-        print(f"\n✗ Pipeline failed with error: {e}")
+        print(f"Pipeline failed with error: {e}")
         traceback.print_exc()
         raise
 
