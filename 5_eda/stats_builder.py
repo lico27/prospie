@@ -42,12 +42,12 @@ def make_summary_df(funders_df, grants_df):
             funders_df["num_grants"].min(),
             grants_df.groupby("funder_num")["recipient_id"].nunique().mean(),
             funders_df["areas"].apply(len).mean(),
-            funders_df["income"].mean(),
-            funders_df["income"].median(),
-            funders_df["expenditure"].mean(),
-            funders_df["expenditure"].median(),
-            f"{funders_df.loc[funders_df.loc[funders_df['income'] > 0, 'income'].idxmax(), 'name']} (£{funders_df.loc[funders_df.loc[funders_df['income'] > 0, 'income'].idxmax(), 'income']:,.2f})",
-            f"{funders_df.loc[funders_df.loc[funders_df['expenditure'] > 0, 'expenditure'].idxmax(), 'name']} (£{funders_df.loc[funders_df.loc[funders_df['expenditure'] > 0, 'expenditure'].idxmax(), 'expenditure']:,.2f})",
+            funders_df["income_latest"].mean(),
+            funders_df["income_latest"].median(),
+            funders_df["expenditure_latest"].mean(),
+            funders_df["expenditure_latest"].median(),
+            f"{funders_df.loc[funders_df.loc[funders_df['income_latest'] > 0, 'income_latest'].idxmax(), 'name']} (£{funders_df.loc[funders_df.loc[funders_df['income_latest'] > 0, 'income_latest'].idxmax(), 'income_latest']:,.2f})",
+            f"{funders_df.loc[funders_df.loc[funders_df['expenditure_latest'] > 0, 'expenditure_latest'].idxmax(), 'name']} (£{funders_df.loc[funders_df.loc[funders_df['expenditure_latest'] > 0, 'expenditure_latest'].idxmax(), 'expenditure_latest']:,.2f})",
             grants_df.groupby("recipient_id")["grant_id"].nunique().mean(),
             f"{grants_df.groupby('recipient_id')['grant_id'].nunique().min():.0f} to {grants_df.groupby('recipient_id')['grant_id'].nunique().max():.0f}",
             f"{grants_df.loc[grants_df.loc[grants_df['amount'] > 0, 'amount'].idxmax(), 'recipient_name']} (£{grants_df.loc[grants_df.loc[grants_df['amount'] > 0, 'amount'].idxmax(), 'amount']:,.2f}) from {grants_df.loc[grants_df.loc[grants_df['amount'] > 0, 'amount'].idxmax(), 'funder_name']}",
@@ -85,10 +85,10 @@ def calculate_stats(funders_df, grants_df):
 
     # Grants to income ratios
     grants_last_year = grants_df[grants_df["year"] == grants_df["year"].max()].groupby("funder_num")["amount"].sum()
-    giving_ratios = funders_df.set_index("registered_num")[["income"]].copy()
+    giving_ratios = funders_df.set_index("registered_num")[["income_latest"]].copy()
     giving_ratios["grants_last_year"] = grants_last_year
-    giving_ratios["grants_to_income_ratio"] = (giving_ratios["grants_last_year"] / giving_ratios["income"]) * 100
-    get_ratios = giving_ratios.loc[(giving_ratios["income"] > 0) & (giving_ratios["grants_to_income_ratio"].notna()),"grants_to_income_ratio"]
+    giving_ratios["grants_to_income_ratio"] = (giving_ratios["grants_last_year"] / giving_ratios["income_latest"]) * 100
+    get_ratios = giving_ratios.loc[(giving_ratios["income_latest"] > 0) & (giving_ratios["grants_to_income_ratio"].notna()),"grants_to_income_ratio"]
     mean_grants_to_income = get_ratios.mean()
     median_grants_to_income = get_ratios.median()
 
