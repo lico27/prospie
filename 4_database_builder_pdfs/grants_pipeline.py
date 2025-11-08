@@ -117,11 +117,9 @@ def build_recipient_grants_table(recipients, grants, key, url):
         except Exception as e:
             error_msg = str(e)
             if "statement timeout" in error_msg.lower():
-                print(f"Warning: Query timeout on batch {i//batch_size + 1}. Consider adding an index on recipient_name column.")
-                print(f"SQL: CREATE INDEX IF NOT EXISTS idx_recipients_name ON recipients(recipient_name);")
+                print(f"timeout on batch {i//batch_size + 1}")
             else:
                 print(f"Error querying batch {i//batch_size + 1}: {e}")
-            #continue processing even if query fails - will create new IDs for these recipients
 
     #get ids from names and create mapping
     id_from_name = {r["recipient_name"]: r["recipient_id"] for r in existing_recipients}
