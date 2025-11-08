@@ -50,7 +50,7 @@ def clean_data(tables, upper_cols, int_cols):
         for col in ["name", "funder_name", "recipient_name"]:
             if col in tables[i].columns:
                 def remove_leading_the(name):
-                    if isinstance(name, str) and name.startswith("The "):
+                    if isinstance(name, str) and name.startswith("THE "):
                         return name[4:]
                     return name
                 tables[i].loc[:, col] = tables[i][col].apply(remove_leading_the)
