@@ -3,6 +3,9 @@ from grants_pipeline import build_grants_table, build_funder_grants_table, build
 from supabase import create_client
 
 def get_data(c_nums, api_key, supabase_key, supabase_url, skip_list=None):
+    """
+    Calls accounts_pipeline and grants_pipeline to extract data from pdfs and build tables.
+    """
 
     #get clean dataframe extracted from accounts pdfs
     accounts = get_accounts_data(c_nums, api_key, skip_list)
