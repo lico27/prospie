@@ -3,6 +3,8 @@ import requests
 import pandas as pd
 import time
 import os
+import json
+from datetime import datetime
 
 def get_accounts_urls(c_nums):
 
@@ -97,6 +99,34 @@ def get_accounts_urls(c_nums):
 
     accessible_count = len(c_nums) - inaccessible_count
     print(f"\nCharity Commission pages: {accessible_count} accessible, {inaccessible_count} inaccessible out of {len(c_nums)} total\n")
+
+    #track inaccessible pages
+    inaccessible_file = os.path.join(os.path.dirname(__file__), "inaccessible_charities.json")
+
+    if os.path.exists(inaccessible_file):
+        with open(inaccessible_file, 'r') as f:
+            existing_data = json.load(f)
+    else:
+        existing_data = {
+            "charity_numbers": [],
+            "runs": []
+        }
+
+    #update existing data
+    inaccessible_nums = [item["registered_num"] for item in inaccessible_accounts]
+    for num in inaccessible_nums:
+        if num not in existing_data["charity_numbers"]:
+            existing_data["charity_numbers"].append(num)
+
+    existing_data["runs"].append({
+        "timestamp": datetime.now().isoformat(),
+        "total_processed": len(c_nums),
+        "inaccessible": inaccessible_count,
+        "inaccessible_nums": inaccessible_nums
+    })
+
+    with open(inaccessible_file, 'w') as f:
+        json.dump(existing_data, f, indent=2)
 
     return accounts
 
