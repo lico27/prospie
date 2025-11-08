@@ -3,12 +3,13 @@ import os
 import pandas as pd
 from cc_api.client import extract_cc_data
 from cc_api.areas_builder import transform_area_columns
+from supabase import create_client
 
 #add project root to path for utils import
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from utils import clean_data
 
-def get_recipient_data(recipient_grants, recipients_info, areas):
+def get_recipient_data(recipient_grants, recipients_info, areas, supabase_url, supabase_key):
 
 	#handle empty recipient_grants
 	if recipient_grants.empty or len(recipient_grants) == 0:
@@ -46,8 +47,33 @@ def get_recipient_data(recipient_grants, recipients_info, areas):
 	_, recipient_all_areas = transform_area_columns(recipient_df)
 	recipient_all_areas = recipient_all_areas.drop_duplicates()
 
-	#find new areas that don't exist in the areas table yet
-	existing_areas = areas.rename(columns={"area_level": "area_type"})
+	#get areas from database to check against
+	supabase = create_client(supabase_url, supabase_key)
+	try:
+		result = supabase.table("areas").select("area_id, area_name, area_level").execute()
+		if result.data and len(result.data) > 0:
+			db_areas = pd.DataFrame(result.data)
+			db_areas["area_id"] = db_areas["area_id"].astype(int)
+
+			#combine in-memory areas with database areas
+			all_existing_areas = pd.concat([areas, db_areas], ignore_index=True)
+			all_existing_areas = all_existing_areas.drop_duplicates(subset=["area_name", "area_level"], keep="first")
+
+			max_area_id = all_existing_areas["area_id"].max()
+			next_area_id = max_area_id + 1
+		else:
+			all_existing_areas = areas.copy()
+			if areas.empty or len(areas) == 0:
+				next_area_id = 1
+			else:
+				next_area_id = int(areas["area_id"].max()) + 1
+	except Exception as e:
+		print(f"Warning: Could not fetch existing areas from database: {e}")
+		all_existing_areas = areas.copy()
+		next_area_id = int(areas["area_id"].max()) + 1 if not areas.empty else 1
+
+	#find new areas
+	existing_areas = all_existing_areas.rename(columns={"area_level": "area_type"})
 	new_areas = recipient_all_areas[["area_name", "area_type"]].drop_duplicates()
 	new_areas = new_areas.merge(
 		existing_areas[["area_name", "area_type"]],
@@ -57,21 +83,14 @@ def get_recipient_data(recipient_grants, recipients_info, areas):
 	)
 	new_areas = new_areas[new_areas["_merge"] == "left_only"][["area_name", "area_type"]]
 
-	#add new areas to the areas table with new IDs
+	#add new areas to ttable
 	if len(new_areas) > 0:
-		#handle empty areas table
-		if areas.empty or len(areas) == 0:
-			next_area_id = 1
-		else:
-			next_area_id = int(areas["area_id"].max()) + 1
 		new_areas["area_id"] = range(next_area_id, next_area_id + len(new_areas))
 		new_areas = new_areas.rename(columns={"area_type": "area_level"})
-		areas = pd.concat([areas, new_areas], ignore_index=True)
+		all_existing_areas = pd.concat([all_existing_areas, new_areas], ignore_index=True)
 
-	#deduplicate areas after adding new ones
-	areas = areas.drop_duplicates(subset=["area_name", "area_level"], keep="first").reset_index(drop=True)
+	areas = all_existing_areas.drop_duplicates(subset=["area_name", "area_level"], keep="first").reset_index(drop=True)
 
-	#merge with updated areas table to get area IDs
 	recipient_areas = recipient_all_areas.merge(
 		areas.rename(columns={"area_level": "area_type"}),
 		on=["area_name", "area_type"]

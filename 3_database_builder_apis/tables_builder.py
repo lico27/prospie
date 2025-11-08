@@ -11,6 +11,6 @@ def get_data(c_nums, supabase_url, supabase_key):
 	grants, funder_grants, recipient_grants, recipients_info = get_grant_data(c_nums)
 
 	#call charity commission api and extract data to build tables for recipients and update with any new areas
-	recipients, recipient_areas, areas = get_recipient_data(recipient_grants, recipients_info, areas)
+	recipients, recipient_areas, areas = get_recipient_data(recipient_grants, recipients_info, areas, supabase_url, supabase_key)
 
 	return funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas, financials, funder_financials, grants, funder_grants, recipients, recipient_grants, recipient_areas
