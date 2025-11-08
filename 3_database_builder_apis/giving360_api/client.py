@@ -6,9 +6,12 @@ def call_360_api(c_nums):
     API_URL = "https://api.threesixtygiving.org/api/v1/"
     grants = []
 
-    for num in c_nums:
+    print(f"Querying 360Giving API for {len(c_nums)} funders...")
+
+    for i, num in enumerate(c_nums, 1):
         org_id = "GB-CHC-" + num
         url = API_URL + "org/" + org_id + "/grants_made/"
+        grants_before = len(grants)
 
         try:
             while url is not None:
@@ -44,4 +47,8 @@ def call_360_api(c_nums):
             time.sleep(0.6)
             continue
 
+        grants_found = len(grants) - grants_before
+        print(f"Funder {i}/{len(c_nums)} ({num}): found {grants_found} grants (total: {len(grants)} so far)")
+
+    print(f"\nCompleted: fetched {len(grants)} grants total from 360Giving API")
     return grants

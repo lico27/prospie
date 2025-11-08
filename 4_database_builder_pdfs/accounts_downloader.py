@@ -5,10 +5,11 @@ import time
 import os
 
 def get_accounts_urls(c_nums):
-    
+
     accounts_data = []
     inaccessible_accounts = []
-       
+    inaccessible_count = 0
+
     for num in c_nums:
         try:
             #get charity's accounts page
@@ -27,6 +28,7 @@ def get_accounts_urls(c_nums):
                                               "year_end": None,
                                               "url": None,
                                               "accounts_accessed": False})
+                inaccessible_count += 1
                 continue
 
             #limit requests
@@ -92,6 +94,9 @@ def get_accounts_urls(c_nums):
         raise   
     
     accounts = pd.concat([accounts, inaccessible], ignore_index=True)
+
+    accessible_count = len(c_nums) - inaccessible_count
+    print(f"\nCharity Commission pages: {accessible_count} accessible, {inaccessible_count} inaccessible out of {len(c_nums)} total\n")
 
     return accounts
 
