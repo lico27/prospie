@@ -39,7 +39,20 @@ if __name__ == "__main__":
         for table_name, (df, unique_key) in tables.items():
             pipe_to_supabase(df, table_name, unique_key, supabase_url, supabase_key)
 
-        print("Pipeline completed successfully")
+        #change bool to true for funders on the list
+        from supabase import create_client
+        supabase = create_client(supabase_url, supabase_key)
+
+        if not funder_list.empty:
+            funders_on_list = funder_list["registered_num"].unique().tolist()
+
+            for registered_num in funders_on_list:
+                try:
+                    supabase.table("funders").update({"is_on_list": True}).eq("registered_num", registered_num).execute()
+                except Exception as e:
+                    print(f"Warning: Could not update is_on_list for {registered_num}: {e}")
+
+        print("Pipeline completed successfully!")
 
     except Exception as e:
         print(f"Pipeline failed with error: {e}")
