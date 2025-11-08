@@ -44,3 +44,6 @@ __pycache__/
 
 /accounts
 *publicextract*
+
+# Inaccessible charities tracking
+4_database_builder_pdfs/inaccessible_charities.json
