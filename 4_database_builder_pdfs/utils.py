@@ -2,6 +2,7 @@ import re
 import ocrmypdf
 import pandas as pd
 from supabase import create_client
+from spellchecker import SpellChecker
 
 def check_accounts(accounts_content):
 
@@ -20,6 +21,35 @@ def check_accounts(accounts_content):
         return False
     
     return True
+
+def clean_ocr_text(text):
+    """
+    Cleans OCR text by correcting common spelling errors from misread characters.
+    Only corrects purely alphabetic words to avoid messing with numbers and alphanumeric strings.
+    Preserves original case patterns (uppercase, capitalized, lowercase).
+    """
+    spell = SpellChecker()
+    words = text.split()
+    corrected_words = []
+
+    for word in words:
+        # Only correct if it's all letters (avoid messing with numbers, mixed alphanumeric)
+        if word.isalpha():
+            correction = spell.correction(word.lower())
+            if correction:
+                # Preserve original case pattern
+                if word.isupper():
+                    corrected_words.append(correction.upper())
+                elif word[0].isupper():
+                    corrected_words.append(correction.capitalize())
+                else:
+                    corrected_words.append(correction)
+            else:
+                corrected_words.append(word)
+        else:
+            corrected_words.append(word)
+
+    return ' '.join(corrected_words)
 
 def ocr_accounts(pdf_path):
     """

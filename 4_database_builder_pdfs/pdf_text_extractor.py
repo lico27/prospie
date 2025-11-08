@@ -2,7 +2,7 @@ import pdfplumber
 import fitz
 import pandas as pd
 import time
-from utils import check_accounts
+from utils import check_accounts, clean_ocr_text
 from sections_and_grants_extractor import find_sections_by_sorp, find_sections_by_regex, find_grants
 
 def get_accounts_text(pdf_path, accounts_df, index):
@@ -17,12 +17,15 @@ def get_accounts_text(pdf_path, accounts_df, index):
         for page in doc:
             text += page.get_text() + "\n"
         doc.close()
-        
+
         #check for validity of text
-        if text and "(cid:" not in text[:1000] and check_accounts(text):
-            accounts_df.at[index, "accounts_text"] = text
-            return
-        
+        if text and "(cid:" not in text[:1000]:
+            #apply spell checking to clean OCR errors
+            text = clean_ocr_text(text)
+            if check_accounts(text):
+                accounts_df.at[index, "accounts_text"] = text
+                return
+
         #backup attempt for more complex files
         text = ""
         with pdfplumber.open(pdf_path) as pdf:
@@ -30,7 +33,11 @@ def get_accounts_text(pdf_path, accounts_df, index):
                 page_text = page.extract_text()
                 if page_text:
                     text += page_text + "\n"
-        
+
+        #apply spell checking to clean ocr errors
+        if text:
+            text = clean_ocr_text(text)
+
         #validate again before saving
         if check_accounts(text):
             accounts_df.at[index, "accounts_text"] = text
