@@ -1,15 +1,22 @@
 import matplotlib.pyplot as plt
-from utils import explode_lists
+from eda_utils import explode_lists
 
-def make_bar_chart(df, col, title, color="#2E86AB"):
+def make_bar_chart(df, col, title, color="#2E86AB", ax=None):
     """
     Creates a bar chart to display most popular categories.
+    Can accept an optional ax parameter to plot on an existing axis.
     """
     counts = explode_lists(df, col)[col].value_counts().head(10)
     total = explode_lists(df, col)[col].count()
     percentages = (counts / total * 100)
 
-    _, ax = plt.subplots(figsize=(10, 6))
+    # Create new figure if ax not provided
+    if ax is None:
+        _, ax = plt.subplots(figsize=(10, 6))
+        show_plot = True
+    else:
+        show_plot = False
+
     bars = ax.barh(range(len(counts)), counts.values, color=color, alpha=0.8)
 
     #edit formatting and labels
@@ -28,5 +35,7 @@ def make_bar_chart(df, col, title, color="#2E86AB"):
     ax.spines["right"].set_visible(False)
     ax.grid(axis="x", alpha=0.3, linestyle="--")
 
-    plt.tight_layout()
-    plt.show()
+    # Only show if creating standalone plot
+    if show_plot:
+        plt.tight_layout()
+        plt.show()
