@@ -33,10 +33,10 @@ def clean_data(tables, upper_cols, int_cols):
                 tables[i].loc[:, col] = pd.to_numeric(tables[i][col], errors="coerce").astype("Int64")
 
         #ensure financial figures are positive
-        if "income" in tables[i].columns:
-            tables[i].loc[tables[i]["income"] < 0, "income"] = None
-        if "expenditure" in tables[i].columns:
-            tables[i].loc[tables[i]["expenditure"] < 0, "expenditure"] = None
+        if "income_latest" in tables[i].columns:
+            tables[i].loc[tables[i]["income_latest"] < 0, "income_latest"] = None
+        if "expenditure_latest" in tables[i].columns:
+            tables[i].loc[tables[i]["expenditure_latest"] < 0, "expenditure_latest"] = None
 
         #make sure websites are formatted correctly
         if "website" in tables[i].columns:

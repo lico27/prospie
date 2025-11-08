@@ -48,7 +48,7 @@ def transform_area_columns(df):
 
     #drop unnecessary columns and rows
     areas_df = areas_df.drop(columns=["name", "website", "activities", "objectives",
-                                      "income", "expenditure", "classifications",
+                                      "income_latest", "expenditure_latest", "classifications",
                                       "country_continent", "local_authority", "region",
                                       "area_welsh_ind"], errors="ignore")
     areas_df.columns = [col.replace("area_", "") for col in areas_df.columns]

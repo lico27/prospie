@@ -26,7 +26,7 @@ def build_classifications_tables(df):
         classifications_final = pd.concat([exploded_df_classifications, classifications_df], axis=1)
 
         #drop unnecessary columns and rows
-        classifications_final = classifications_final.drop(columns=["name", "website", "activities", "objectives", "income", "expenditure", "classifications", "country_continent", "local_authority", "region"])
+        classifications_final = classifications_final.drop(columns=["name", "website", "activities", "objectives", "income_latest", "expenditure_latest", "classifications", "country_continent", "local_authority", "region"])
         classifications_final = classifications_final[classifications_final["classification_type"] != "How"]
     except Exception as e:
         print(f"Error processing classifications data: {e}")
