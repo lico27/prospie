@@ -174,16 +174,14 @@ def format_stats(row):
                            "Median funder expenditure",
                            "Mean funder income",
                            "Mean funder expenditure",
-                           "Median funder income (historical)",
-                           "Median funder expenditure (historical)",
-                           "Mean funder income (historical avg)",
-                           "Mean funder expenditure (historical avg)",
+                           "Median funder income",
+                           "Median funder expenditure",
+                           "Mean funder income",
+                           "Mean funder expenditure",
                            "Standard deviation"]:
         return f"£{row['Value']:,.2f}"
-    elif row["Metric"] in ["Largest funder by income",
-                           "Largest funder by expenditure",
-                           "Largest funder by avg income",
-                           "Largest funder by avg expenditure",
+    elif row["Metric"] in ["Largest funder by mean income",
+                           "Largest funder by mean expenditure",
                            "Recipient of largest grant"]:
         return row['Value'].title()
     elif row["Metric"] in ["Share of grants from top 10% funders (by income)",
@@ -194,6 +192,8 @@ def format_stats(row):
                            "Median grants-to-income ratio"]:
         return f"{row['Value']:,.1f}%"
     else:
+        if isinstance(row['Value'], str):
+            return row['Value']
         return f"{row['Value']:,.0f}"
     
 def format_df(df):
