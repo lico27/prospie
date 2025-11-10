@@ -8,83 +8,82 @@ def transform_area_columns(df):
     Transforms area lists into separate columns.
     """
 
-    expected_columns = {
-        "country_continent": ["country", "continent"],
-        "local_authority": ["local_authority", "metropolitan_county"],
-        "region": ["region"]
-    }
-
-    #explode areas and normalise into columns
-    exploded_df_country_continent = df.explode("country_continent")
-    country_continent_df = ensure_area_columns(
-        exploded_df_country_continent, "country_continent",
-        expected_columns["country_continent"]
-    )
-
-    exploded_df_local_authority = df.explode("local_authority")
-    local_authority_df = ensure_area_columns(
-        exploded_df_local_authority, "local_authority",
-        expected_columns["local_authority"]
-    )
-
-    exploded_df_region = df.explode("region")
-    region_df = ensure_area_columns(
-        exploded_df_region, "region",
-        expected_columns["region"]
-    )
-
-    #rest indexes and combine
-    exploded_df_country_continent = exploded_df_country_continent.reset_index(drop=True)
-    country_continent_df = country_continent_df.reset_index(drop=True)
-
-    exploded_df_local_authority = exploded_df_local_authority.reset_index(drop=True)
-    local_authority_df = local_authority_df.reset_index(drop=True)
-
-    exploded_df_region = exploded_df_region.reset_index(drop=True)
-    region_df = region_df.reset_index(drop=True)
-
-    areas_df = pd.concat([exploded_df_country_continent, country_continent_df,
-                        local_authority_df, region_df], axis=1)
-
-    #drop unnecessary columns and rows
-    areas_df = areas_df.drop(columns=["name", "website", "activities", "objectives",
-                                      "income_latest", "expenditure_latest", "classifications",
-                                      "country_continent", "local_authority", "region",
-                                      "area_welsh_ind"], errors="ignore")
-    areas_df.columns = [col.replace("area_", "") for col in areas_df.columns]
-
-    area_columns = ["country", "continent", "region", "local_authority", "metropolitan_county"]
-
-    #tidy empty/nan values
-    for col in area_columns:
-        if col in areas_df.columns:
-            areas_df[col] = areas_df[col].apply(lambda x: None if x == [] or pd.isna(x) else x)
-
     area_types = {
+        "country": "country",
+        "continent": "continent",
         "local_authority": "local_authority",
         "metropolitan_county": "metropolitan_county",
-        "region": "region",
-        "country": "country",
-        "continent": "continent"
+        "region": "region"
     }
 
-    #pivot to create area-charity combinations
-    areas = []
-    for _, row in areas_df.iterrows():
-        #skip rows with null registered_num
-        if pd.isna(row.get("registered_num")) or not row.get("registered_num"):
+    #process each charity and collect all areas
+    all_areas = []
+
+    for _, row in df.iterrows():
+        registered_num = row.get("registered_num")
+
+        if pd.isna(registered_num) or not registered_num:
             continue
 
-        for column, area_type in area_types.items():
-            if column in areas_df.columns and pd.notna(row[column]) and row[column]:
-                areas.append({
-                    "registered_num": row["registered_num"],
-                    "area_name": row[column],
-                    "area_type": area_type
-                })
+        #process country_continent
+        country_continent = row.get("country_continent")
+        if country_continent is not None and not (isinstance(country_continent, float) and pd.isna(country_continent)):
+            country_continent_list = country_continent if isinstance(country_continent, list) else [country_continent]
+            for item in country_continent_list:
+                if isinstance(item, dict):
+                    if item.get("country"):
+                        all_areas.append({
+                            "registered_num": registered_num,
+                            "area_name": item["country"],
+                            "area_type": "country"
+                        })
+                    if item.get("continent"):
+                        all_areas.append({
+                            "registered_num": registered_num,
+                            "area_name": item["continent"],
+                            "area_type": "continent"
+                        })
+
+        #process local_authority
+        local_authority = row.get("local_authority")
+        if local_authority is not None and not (isinstance(local_authority, float) and pd.isna(local_authority)):
+            local_authority_list = local_authority if isinstance(local_authority, list) else [local_authority]
+            for item in local_authority_list:
+                if isinstance(item, dict):
+                    if item.get("local_authority"):
+                        all_areas.append({
+                            "registered_num": registered_num,
+                            "area_name": item["local_authority"],
+                            "area_type": "local_authority"
+                        })
+                    if item.get("metropolitan_county"):
+                        all_areas.append({
+                            "registered_num": registered_num,
+                            "area_name": item["metropolitan_county"],
+                            "area_type": "metropolitan_county"
+                        })
+
+        #process region
+        region = row.get("region")
+        if region is not None and not (isinstance(region, float) and pd.isna(region)):
+            region_list = region if isinstance(region, list) else [region]
+            for item in region_list:
+                if isinstance(item, dict):
+                    if item.get("region"):
+                        all_areas.append({
+                            "registered_num": registered_num,
+                            "area_name": item["region"],
+                            "area_type": "region"
+                        })
 
     #build dataframe with everything
-    all_areas = pd.DataFrame(areas)
+    all_areas = pd.DataFrame(all_areas)
+
+    #handle empty dataframe
+    if all_areas.empty:
+        all_areas = pd.DataFrame(columns=["registered_num", "area_name", "area_type"])
+        areas = pd.DataFrame(columns=["area_name", "area_level"])
+        return areas, all_areas
 
     #drop unnecessary columns
     areas = all_areas[["area_name", "area_type"]].drop_duplicates().reset_index(drop=True)
@@ -97,7 +96,6 @@ def build_areas_tables(df, supabase_url, supabase_key):
     areas, all_areas = transform_area_columns(df)
 
     #connect to supabase and query existing areas
-
     supabase = create_client(supabase_url, supabase_key)
 
     try:
