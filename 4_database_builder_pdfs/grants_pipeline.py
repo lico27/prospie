@@ -1,4 +1,5 @@
 import pandas as pd
+import time
 from supabase import create_client
 
 def build_grants_table(df):
@@ -67,24 +68,37 @@ def build_recipient_grants_table(recipients, grants, key, url):
 
     #find existing pdf ids and batch
     all_pdf_ids = []
-    page_size = 1000
+    page_size = 500
     offset = 0
 
     while True:
-        result = supabase.table("recipients")\
-            .select("recipient_id")\
-            .like("recipient_id", "PDF-%")\
-            .range(offset, offset + page_size - 1)\
-            .execute()
-        
+        try:
+            result = supabase.table("recipients")\
+                .select("recipient_id")\
+                .like("recipient_id", "PDF-%")\
+                .range(offset, offset + page_size - 1)\
+                .execute()
+        except Exception as e:
+            if "timeout" in str(e).lower():
+                print(f"Timeout fetching PDF IDs at offset {offset}, reducing page size...")
+                page_size = page_size // 2
+                if page_size < 50:
+                    print("Page size too small, breaking...")
+                    break
+                continue
+            raise
+
         if not result.data:
             break
-        
+
         all_pdf_ids.extend([r["recipient_id"] for r in result.data])
         offset += page_size
-        
+
         if len(result.data) < page_size:
             break
+
+        #add delay
+        time.sleep(0.1)
 
     #find max existing pdf id and start counter
     max_counter = 0
@@ -100,7 +114,7 @@ def build_recipient_grants_table(recipients, grants, key, url):
 
     #get recipient names from database and batch
     recipient_names = [row["recipient_name"] for _, row in recipients.iterrows()]
-    batch_size = 100
+    batch_size = 50 
     existing_recipients = []
 
     for i in range(0, len(recipient_names), batch_size):
@@ -114,10 +128,28 @@ def build_recipient_grants_table(recipients, grants, key, url):
 
             if result.data:
                 existing_recipients.extend(result.data)
+
+            #add delay
+            time.sleep(0.1)
+
         except Exception as e:
             error_msg = str(e)
-            if "statement timeout" in error_msg.lower():
-                print(f"timeout on batch {i//batch_size + 1}")
+            if "statement timeout" in error_msg.lower() or "timeout" in error_msg.lower():
+                print(f"Timeout on batch {i//batch_size + 1}, retrying with smaller batch...")
+                # Retry with smaller batch
+                smaller_batch_size = batch_size // 2
+                for j in range(i, min(i + batch_size, len(recipient_names)), smaller_batch_size):
+                    smaller_batch = recipient_names[j:j+smaller_batch_size]
+                    try:
+                        result = supabase.table("recipients")\
+                            .select("recipient_id, recipient_name")\
+                            .in_("recipient_name", smaller_batch)\
+                            .execute()
+                        if result.data:
+                            existing_recipients.extend(result.data)
+                        time.sleep(0.1)
+                    except Exception as e2:
+                        print(f"Error on smaller batch: {e2}")
             else:
                 print(f"Error querying batch {i//batch_size + 1}: {e}")
 
