@@ -4,22 +4,25 @@ import pandas as pd
 from supabase import create_client
 from spellchecker import SpellChecker
 
-def check_accounts(accounts_content):
+def check_accounts(accounts_content, charity_num=None):
+
+    prefix = f"[{charity_num}] " if charity_num else ""
 
     #check text is not unexpectedly short
     if len(accounts_content) < 100:
         return False
-    
+
     #check proportion of unusual characters is not too high
     non_ascii = sum(1 for char in accounts_content if ord(char) > 127)
-    if non_ascii / len(accounts_content) > 0.3:
+    non_ascii_pct = non_ascii / len(accounts_content)
+    if non_ascii_pct > 0.45:
         return False
-    
+
     #check years are present and from 2000 onwards
     year_pattern = r"\b20\d{2}\b"
     if not re.search(year_pattern, accounts_content):
         return False
-    
+
     return True
 
 def clean_ocr_text(text):
@@ -27,25 +30,32 @@ def clean_ocr_text(text):
     Runs spell check on OCRed text to try and catch misread characters.
     """
     spell = SpellChecker()
-    words = text.split()
-    corrected_words = []
+    
+    lines = text.split('\n')
+    corrected_lines = []
 
-    for word in words:
-        if word.isalpha():
-            correction = spell.correction(word.lower())
-            if correction:
-                if word.isupper():
-                    corrected_words.append(correction.upper())
-                elif word[0].isupper():
-                    corrected_words.append(correction.capitalize())
+    for line in lines:
+        words = line.split()
+        corrected_words = []
+
+        for word in words:
+            if word.isalpha():
+                correction = spell.correction(word.lower())
+                if correction:
+                    if word.isupper():
+                        corrected_words.append(correction.upper())
+                    elif word[0].isupper():
+                        corrected_words.append(correction.capitalize())
+                    else:
+                        corrected_words.append(correction)
                 else:
-                    corrected_words.append(correction)
+                    corrected_words.append(word)
             else:
                 corrected_words.append(word)
-        else:
-            corrected_words.append(word)
 
-    return ' '.join(corrected_words)
+        corrected_lines.append(' '.join(corrected_words))
+
+    return '\n'.join(corrected_lines)
 
 def ocr_accounts(pdf_path):
     """
