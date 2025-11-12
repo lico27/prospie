@@ -132,7 +132,7 @@ def calculate_stats(funders_df, grants_df):
     median_grants_to_income = get_ratios.median()
 
     #find share of funders supporting general charitable purposes only
-    gcp_funders = funders_df[(funders_df["causes"].apply(len) == 1) & (funders_df["causes"].apply(lambda x: "101" in x))]
+    gcp_funders = funders_df[(funders_df["causes"].apply(len) == 1) & (funders_df["causes"].apply(lambda x: "General Charitable Purposes" in x))]
     gcp_pct = (len(gcp_funders) / len(funders_df)) * 100
 
     return top_funders_share, top_recipients_share, repeat_grants_pct, avg_grants_per_pair, mean_grants_to_income, median_grants_to_income, gcp_pct
