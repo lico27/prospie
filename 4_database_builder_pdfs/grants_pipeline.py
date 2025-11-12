@@ -171,12 +171,17 @@ def build_recipient_grants_table(recipients, grants, key, url):
             id_from_name[recipient_name] = recipient_id
 
         #upsert all recipients to set is_recipient = True
-        recipients_for_upsert.append({
+        upsert_record = {
             "recipient_id": recipient_id,
             "recipient_name": recipient_name,
-            "recipient_activities": recipient_activities,
             "is_recipient": True
-        })
+        }
+
+        #only include activities if not empty
+        if recipient_activities is not None:
+            upsert_record["recipient_activities"] = recipient_activities
+
+        recipients_for_upsert.append(upsert_record)
 
     #upsert recipients to database
     if recipients_for_upsert:
