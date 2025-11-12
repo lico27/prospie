@@ -72,9 +72,10 @@ def build_list_table(df, supabase_url, supabase_key):
 
     return list_entries
 
-def build_funder_list_table(df, list_entries):
+def build_funder_list_table(df, list_entries, supabase_url, supabase_key):
     """
     Builds funder_list join table linking funders to list entries.
+    Only includes funders that exist in the funders table.
     """
 
     df = df.copy()
@@ -87,7 +88,26 @@ def build_funder_list_table(df, list_entries):
         how="left"
     )[["registered_num", "list_id"]].drop_duplicates()
 
-    print(f"Created {len(funder_list)} funder_list records")
+    #fetch existing funders from database to validate foreign keys
+    supabase = create_client(supabase_url, supabase_key)
+
+    try:
+        result = supabase.table("funders").select("registered_num").execute()
+        existing_funders = set(row["registered_num"] for row in result.data)
+
+        #filter to only include funders that exist in the database
+        initial_count = len(funder_list)
+        funder_list = funder_list[funder_list["registered_num"].isin(existing_funders)]
+        filtered_count = initial_count - len(funder_list)
+
+        if filtered_count > 0:
+            print(f"Warning: Filtered out {filtered_count} funder_list records for charities not in funders table")
+
+        print(f"Created {len(funder_list)} funder_list records")
+
+    except Exception as e:
+        print(f"ERROR: Could not fetch existing funders from database: {e}")
+        raise
 
     return funder_list
 
@@ -99,6 +119,6 @@ def get_list_data(csv_file, supabase_url, supabase_key):
     list_entries = build_list_table(df, supabase_url, supabase_key)
 
     #build join table
-    funder_list = build_funder_list_table(df, list_entries)
+    funder_list = build_funder_list_table(df, list_entries, supabase_url, supabase_key)
 
     return list_entries, funder_list
