@@ -1,0 +1,57 @@
+.glass-navbar,
+.glass-navbar.navbar,
+.navbar.glass-navbar {
+  background: rgba(26, 22, 37, 0.3) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: none !important;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 1000 !important;
+}
+
+.glass-navbar .container,
+.glass-navbar .container-fluid {
+  background: transparent !important;
+}
+
+.glass-navbar .navbar-brand,
+.glass-navbar .nav-link {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #d4cfe0 !important;
+}
+
+.glass-navbar .navbar-brand {
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.glass-navbar .nav-link {
+  transition: all 0.2s ease;
+}
+
+.glass-navbar .nav-link:hover {
+  color: #b8a8d4 !important;
+  text-shadow: 0 0 12px rgba(184, 168, 212, 0.6);
+}
+
+.glass-navbar .dropdown-menu {
+  background-color: rgba(26, 22, 37, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px);
+}
+
+.glass-navbar .dropdown-item {
+  color: #d4cfe0 !important;
+}
+
+.glass-navbar .dropdown-item:hover {
+  background-color: rgba(116, 99, 150, 0.2) !important;
+  color: #b8a8d4 !important;
+}
