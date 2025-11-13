@@ -20,9 +20,7 @@ if __name__ == "__main__":
         sample_file = os.path.join(os.path.dirname(__file__), "..", "1_sample_generator", "sample_charity_numbers.json")
         with open(sample_file, 'r') as f:
             sample_data = json.load(f)
-        c_nums = sample_data["charity_numbers"][600:650]
-
-        #c_nums = ["225859"]
+        c_nums = sample_data["charity_numbers"]
 
         #get data
         funders, beneficiaries, funder_beneficiaries, causes, funder_causes, areas, funder_areas, financials, funder_financials, grants, funder_grants, recipients, recipient_grants, recipient_areas = get_data(c_nums, supabase_url, supabase_key)
