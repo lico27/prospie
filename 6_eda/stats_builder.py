@@ -24,6 +24,9 @@ def make_summary_df(funders_df, grants_df):
     """
     Creates a dictionary of summary statistics for funders and grants.
     """
+    #deduplicate grants_df for financial calculations
+    grants_unique = grants_df.drop_duplicates(subset=["grant_id"], keep="first")
+
     #get averages for historical financials data
     funders_df_calc = funders_df.copy()
     funders_df_calc["income_hist_mean"] = funders_df_calc["income_history"].apply(get_historical_mean)
@@ -46,6 +49,7 @@ def make_summary_df(funders_df, grants_df):
     summary_data = {
         "Metric": [
             "Total funders",
+            "Funders with grants",
             "Total recipients",
             "Total grants",
             "Total grant value",
@@ -72,9 +76,10 @@ def make_summary_df(funders_df, grants_df):
         ],
         "Value": [
             len(funders_df["registered_num"].unique()),
+            len(funders_df.loc[funders_df["num_grants"] > 0, "registered_num"].unique()),
             len(grants_df["recipient_id"].unique()),
-            len(grants_df["grant_id"].unique()),
-            grants_df["amount"].sum(),
+            len(grants_unique["grant_id"].unique()),  
+            grants_unique["amount"].sum(),
             funders_df["num_grants"].mean(),
             funders_df["num_grants"].max(),
             funders_df["num_grants"].min(),
@@ -88,12 +93,12 @@ def make_summary_df(funders_df, grants_df):
             f"{funders_df_calc.loc[largest_by_expenditure_idx, 'name']} (£{funders_df_calc.loc[largest_by_expenditure_idx, 'expenditure_for_stats']:,.2f})",
             grants_df.groupby("recipient_id")["grant_id"].nunique().mean(),
             f"{grants_df.groupby('recipient_id')['grant_id'].nunique().min():.0f} to {grants_df.groupby('recipient_id')['grant_id'].nunique().max():.0f}",
-            f"{grants_df.loc[grants_df.loc[grants_df['amount'] > 0, 'amount'].idxmax(), 'recipient_name']} (£{grants_df.loc[grants_df.loc[grants_df['amount'] > 0, 'amount'].idxmax(), 'amount']:,.2f}) from {grants_df.loc[grants_df.loc[grants_df['amount'] > 0, 'amount'].idxmax(), 'funder_name']}",
-            grants_df["amount"].mean(),
-            grants_df["amount"].median(),
-            grants_df["amount"].std(),
-            grants_df.loc[grants_df["amount"] > 0, "amount"].min(),
-            grants_df["amount"].max()
+            f"{grants_unique.loc[grants_unique.loc[grants_unique['amount'] > 0, 'amount'].idxmax(), 'recipient_name']} (£{grants_unique.loc[grants_unique.loc[grants_unique['amount'] > 0, 'amount'].idxmax(), 'amount']:,.2f}) from {grants_unique.loc[grants_unique.loc[grants_unique['amount'] > 0, 'amount'].idxmax(), 'funder_name']}",
+            grants_unique["amount"].mean(),  
+            grants_unique["amount"].median(),  
+            grants_unique["amount"].std(),  
+            grants_unique.loc[grants_unique["amount"] > 0, "amount"].min(),  
+            grants_unique["amount"].max()  
         ]
     }
     return summary_data
@@ -102,24 +107,27 @@ def calculate_stats(funders_df, grants_df):
     """
     Calculates some additional statistics for funders and grants.
     """
+    #deduplicate grants_df for financial calculations
+    grants_unique = grants_df.drop_duplicates(subset=["grant_id"], keep="first")
+
     #find share of 90th percentile funders
     percentile_90_funders = funders_df[funders_df["num_grants"] >= funders_df["num_grants"].quantile(0.9)]
     top_funders_share = (percentile_90_funders["num_grants"].sum() / funders_df["num_grants"].sum()) * 100
 
-    #find share of 90th percentile recipients
-    recipient_totals = grants_df.groupby("recipient_id")["amount"].sum()
+    #find share of 90th percentile recipients (using unique grants to avoid double-counting)
+    recipient_totals = grants_unique.groupby("recipient_id")["amount"].sum()
     percentile_90_recipients = recipient_totals[recipient_totals >= recipient_totals.quantile(0.9)].sum()
-    top_recipients_share = (percentile_90_recipients / grants_df["amount"].sum()) * 100
+    top_recipients_share = (percentile_90_recipients / grants_unique["amount"].sum()) * 100
 
-    #find repeat grant funder-recipient pairs
-    funder_recipient_pairs = grants_df.groupby(["funder_num", "recipient_id"])["grant_id"].count()
+    #find repeat grant funder-recipient pairs (use grants_df since we want to count unique pairs)
+    funder_recipient_pairs = grants_df.groupby(["funder_num", "recipient_id"])["grant_id"].nunique()
     repeat_grants = (funder_recipient_pairs > 1).sum()
     total_pairs = len(funder_recipient_pairs)
     repeat_grants_pct = (repeat_grants / total_pairs) * 100
     avg_grants_per_pair = funder_recipient_pairs.mean()
 
-    #find historical averages and ratios
-    grants_last_year = grants_df[grants_df["year"] == grants_df["year"].max()].groupby("funder_num")["amount"].sum()
+    #find historical averages and ratios (using unique grants to avoid double-counting)
+    grants_last_year = grants_unique[grants_unique["year"] == grants_unique["year"].max()].groupby("funder_num")["amount"].sum()
     funders_calc = funders_df.set_index("registered_num").copy()
     funders_calc["income_hist_mean"] = funders_calc["income_history"].apply(get_historical_mean)
     funders_calc["income_for_ratio"] = funders_calc["income_hist_mean"].combine_first(funders_calc["income_latest"])
