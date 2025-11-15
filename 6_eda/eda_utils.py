@@ -20,3 +20,8 @@ def check_word_counts(df, col, n=10):
     longest = df_no_nas.sort_values(col, ascending=False).head(n)["registered_num"].tolist()
     shortest = df_no_nas.sort_values(col, ascending=True).head(n)["registered_num"].tolist()
     return longest, shortest
+
+def print_in_rows(items, num_per_row):
+    items_list = list(items)
+    for i in range(0, len(items_list), num_per_row):
+        print(", ".join(items_list[i:i+num_per_row]))
