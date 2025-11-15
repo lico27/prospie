@@ -70,7 +70,7 @@ def find_sections_by_regex(text):
         if end_pos:
             combined_text = text[start_pos:end_pos]
         else:
-            combined_text = text[start_pos:start_pos + 2000]
+            combined_text = text[start_pos:start_pos + 800]
         
         combined_text = combined_text.strip()
 
@@ -120,7 +120,7 @@ def find_sections_by_regex(text):
         if end_pos:
             obj_text = text[start_pos:end_pos]
         else:
-            obj_text = text[start_pos:start_pos + 2000]
+            obj_text = text[start_pos:start_pos + 800]
         
         obj_text = obj_text.strip()
         if len(obj_text) < 20:
@@ -136,7 +136,7 @@ def find_sections_by_regex(text):
         if end_pos:
             achievement_text = text[start_pos:end_pos]
         else:
-            achievement_text = text[start_pos:start_pos + 2000]
+            achievement_text = text[start_pos:start_pos + 800]
 
         achievement_text = achievement_text.strip()
         if len(achievement_text) < 20:
@@ -152,7 +152,7 @@ def find_sections_by_regex(text):
         if end_pos:
             policy_text = text[start_pos:end_pos]
         else:
-            policy_text = text[start_pos:start_pos + 2000]
+            policy_text = text[start_pos:start_pos + 800]
 
         policy_text = policy_text.strip()
         if len(policy_text) < 20:

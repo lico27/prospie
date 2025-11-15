@@ -131,13 +131,23 @@ def find_next_section(text, start_pos):
         """
         Finds the next major section heading.
         """
-        #pattern for multi-word headings or known single-word sections
-        section_pattern = r'\n\n\s*([A-Z][A-Za-z]+(?:\s+[A-Za-z]+)+|Financial|Structure|Governance|Risk|Plans|Funding|Reserves)\s*\n'
-        
-        match = re.search(section_pattern, text[start_pos:])
+        common_sections = [
+            'Financial', 'Structure', 'Governance', 'Risk', 'Plans', 'Funding', 'Reserves',
+            'Income', 'Expenditure', 'Trustees', 'Reference', 'Administrative', 'Statement',
+            'Balance', 'Accounts', 'Notes', 'Independent', 'Auditor', 'Basis', 'Accounting',
+            'Investment', 'Funds', 'Liabilities', 'Assets', 'Cashflow', 'Cash Flow',
+            'Restricted', 'Unrestricted', 'Endowment', 'Resources', 'Reconciliation',
+            'Related', 'Remuneration', 'Pension', 'Commitments', 'Contingent', 'Legal'
+        ]
+
+        #give headings options
+        possible_words = '|'.join(common_sections)
+        possible_sections = rf'(?:\n\s*\n\s*|\n)([A-Z][A-Za-z]+(?:\s+[A-Za-z]+)+|{possible_words})(?:\s*\n|\s*$)'
+
+        match = re.search(possible_sections, text[start_pos:], re.IGNORECASE)
         if match:
             return start_pos + match.start()
-        
+
         return None
 
 def clean_tables(df, cols):
