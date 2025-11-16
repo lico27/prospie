@@ -12,14 +12,13 @@ def explode_lists(df, col):
     """
     return df.explode(col).dropna(subset=[col])
 
-def check_word_counts(df, col, n=10):
+def get_longest_values(df, col, id_col, n=10):
     """
-    Gets longest and shortest registered_nums for a word count column.
+    Gets a list of the IDs for the top n longest values in a column.
     """
     df_no_nas = df.dropna(subset=[col])
-    longest = df_no_nas.sort_values(col, ascending=False).head(n)["registered_num"].tolist()
-    shortest = df_no_nas.sort_values(col, ascending=True).head(n)["registered_num"].tolist()
-    return longest, shortest
+    longest = df_no_nas.sort_values(col, ascending=False).head(n)[id_col].tolist()
+    return longest
 
 def print_in_rows(items, num_per_row):
     items_list = list(items)
