@@ -2,7 +2,7 @@ import re
 import anthropic
 import pandas as pd
 import json
-from utils import extract_after_para, find_next_section
+from pdf_utils import extract_after_para, find_next_section
 
 def find_sections_by_sorp(text):
     """

@@ -5,7 +5,7 @@ import pandas as pd
 import json
 from dotenv import load_dotenv
 from tables_builder import get_data
-from utils import get_360_funders
+from pdf_utils import get_360_funders
 
 #add project root to path for data_importer import
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))

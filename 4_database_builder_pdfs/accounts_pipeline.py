@@ -1,7 +1,7 @@
 import os
 from accounts_downloader import get_accounts, save_accounts
 from pdf_text_extractor import get_accounts_text, get_accounts_sections, get_previous_grants
-from utils import clean_tables, clean_dictionaries
+from pdf_utils import clean_tables, clean_dictionaries
 
 def get_accounts_data(c_nums, api_key, skip_list=None):
 

@@ -2,7 +2,7 @@ import pdfplumber
 import fitz
 import pandas as pd
 import time
-from utils import check_accounts, clean_ocr_text
+from pdf_utils import check_accounts, clean_ocr_text
 from sections_and_grants_extractor import find_sections_by_sorp, find_sections_by_regex, find_grants
 
 def get_accounts_text(pdf_path, accounts_df, index):
