@@ -19,10 +19,11 @@ def reprocess_sections(registered_nums=None, limit=None):
     return results_df
 
 #call the function
-llm_sections = reprocess_sections()
+llm_sections = reprocess_sections(registered_nums="200051")
 
 #save to csv
-output_file = "llm_sections.csv"
+script_dir = os.path.dirname(os.path.abspath(__file__))
+output_file = os.path.join(script_dir, "llm_sections.csv")
 llm_sections.to_csv(output_file, index=False)
 print(f"{len(llm_sections)} PDFs reprocssed")
 
