@@ -6,7 +6,7 @@ import importlib.util
 from dotenv import load_dotenv
 import time
 
-project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 root_utils_path = os.path.join(project_root, "utils.py")
