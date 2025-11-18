@@ -50,6 +50,7 @@ def make_summary_df(funders_df, grants_df):
         "Metric": [
             "Total funders",
             "Funders with grants",
+            "Funders with grants from 360Giving",
             "Total recipients",
             "Total grants",
             "Total grant value",
@@ -77,6 +78,7 @@ def make_summary_df(funders_df, grants_df):
         "Value": [
             len(funders_df["registered_num"].unique()),
             len(funders_df.loc[funders_df["num_grants"] > 0, "registered_num"].unique()),
+            len(grants_df[grants_df["source"] == "360Giving"]["funder_num"].unique()),
             len(grants_df["recipient_id"].unique()),
             len(grants_unique["grant_id"].unique()),  
             grants_unique["amount"].sum(),
