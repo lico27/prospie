@@ -63,3 +63,11 @@ def check_names(name):
         return False
     
     return True
+
+def check_overlap(list1, list2):
+    """
+    Checks if two lists overlap.
+    """
+    if not list1 or not list2:
+        return False
+    return len(set(list1) & set(list2)) > 0

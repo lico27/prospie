@@ -10,7 +10,6 @@ def make_bar_chart(df, col, title, color="#2E86AB", ax=None):
     total = explode_lists(df, col)[col].count()
     percentages = (counts / total * 100)
 
-    # Create new figure if ax not provided
     if ax is None:
         _, ax = plt.subplots(figsize=(10, 6))
         show_plot = True
@@ -35,7 +34,29 @@ def make_bar_chart(df, col, title, color="#2E86AB", ax=None):
     ax.spines["right"].set_visible(False)
     ax.grid(axis="x", alpha=0.3, linestyle="--")
 
-    # Only show if creating standalone plot
     if show_plot:
         plt.tight_layout()
         plt.show()
+    
+def make_histograms(match_rates_df):
+    """
+    Makes histograms comparing causes, areas, and beneficiaries match rates.
+    """
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+    for idx, (category, color) in enumerate([("causes", "#2E86AB"),
+                                            ("areas", "#A23B72"),
+                                            ("beneficiaries", "#F18F01")]):
+        col = f"{category}_match_rate"
+        mean_val = match_rates_df[col].mean()
+
+        axes[idx].hist(match_rates_df[col], bins=20, color=color, edgecolor="black")
+        axes[idx].axvline(mean_val, color="red", linestyle="--", linewidth=2,
+                        label=f"Mean: {mean_val:.1%}")
+        axes[idx].set_xlabel("Match Rate")
+        axes[idx].set_ylabel("Number of Funders")
+        axes[idx].set_title(f"{category.title()} Match Rate Distribution")
+        axes[idx].legend()
+
+    plt.tight_layout()
+    plt.show()
