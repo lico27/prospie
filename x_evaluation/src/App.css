@@ -1,0 +1,132 @@
+#root {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.evaluation-section {
+  min-height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+}
+
+.evaluation-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 50%, rgba(116, 99, 150, 0.25), rgba(26, 22, 37, 0.85) 70%);
+  pointer-events: none;
+  border-radius: 16px;
+}
+
+.evaluation-section::after {
+  content: '';
+  position: absolute;
+  top: 20%;
+  right: 10%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(circle, rgba(94, 163, 168, 0.12), transparent 50%);
+  filter: blur(70px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.evaluation-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 3rem 2rem;
+  width: 100%;
+  background: rgba(42, 38, 54, 0.6);
+  border: 1px solid rgba(142, 125, 179, 0.3);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.evaluation-content h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #dcd3ed, #b8a8d4, #8e7db3, #6fa3a8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.03em;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.2;
+  filter: drop-shadow(0 0 20px rgba(116, 99, 150, 0.4));
+}
+
+.evaluation-content p {
+  font-size: 1.125rem;
+  color: #c9c0de;
+  margin: 0;
+  font-weight: 400;
+}
+
+.card {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: rgba(26, 22, 37, 0.4);
+  border: 1px solid rgba(142, 125, 179, 0.2);
+  border-radius: 12px;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid rgba(142, 125, 179, 0.4);
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  background: rgba(142, 125, 179, 0.2);
+  color: #dcd3ed;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  background: rgba(142, 125, 179, 0.3);
+  border-color: rgba(142, 125, 179, 0.6);
+}
+
+button:focus,
+button:focus-visible {
+  outline: 2px solid rgba(111, 163, 168, 0.6);
+  outline-offset: 2px;
+}
+
+@media (min-width: 640px) {
+  .evaluation-content h1 {
+    font-size: 2.75rem;
+  }
+
+  .evaluation-content p {
+    font-size: 1.25rem;
+  }
+
+  .evaluation-content {
+    padding: 4rem 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .evaluation-content h1 {
+    font-size: 3.25rem;
+  }
+
+  .evaluation-content p {
+    font-size: 1.375rem;
+  }
+}
