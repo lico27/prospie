@@ -102,7 +102,7 @@ function EvaluationForm() {
     return (
       <div className="card">
         <h2>Submission complete!</h2>
-        <p>Thank you so much for sumbitting your evaluations. Your help is much appreciated.</p>
+        <p>Thank you so much for submitting your evaluations. Your help is much appreciated.</p>
       </div>
     )
   }
