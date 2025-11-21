@@ -273,6 +273,15 @@ button:focus-visible {
   letter-spacing: 0.05em;
 }
 
+.entity-section h5 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6fa3a8;
+  margin: 0 0 1rem 0;
+  text-align: center;
+  text-transform: uppercase;
+}
+
 .entity-section p {
   font-size: 0.95rem;
   color: #c9c0de;
