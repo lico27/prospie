@@ -70,9 +70,10 @@ function EvaluationForm() {
     try {
       setSubmitting(true)
       await Promise.all(
-        Object.entries(ratings).map(([pairId, rating]) =>
-          submitEvaluation(Number(pairId), rating)
-        )
+        pairs.map(pair => {
+          const rating = ratings[pair.id] || 50
+          return submitEvaluation(pair.id, rating)
+        })
       )
       setCompleted(true)
     } catch (err) {
