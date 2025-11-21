@@ -12,7 +12,7 @@ prospie is an AI tool to support trusts fundraisers in the third sector. prospie
 6. EDA - explores, cleans and visualises the data   
     6.1. Reprocesses PDFs to extract accounts sections using Claude LLM instead of regex
 - A frontend to interact with the app
-- An evaluation framework to assess the performance of the app
+- An evaluation form to gather professional fundraisers' opinions on the alignment of a sample of funder-recipient pairs, to assess the performance of the app 
 
 ## How to...
 
@@ -26,4 +26,4 @@ TBC
 
 ### Evaluate the App
 
-TBC
+Visit [https://lico27.github.io/prospie/](https://lico27.github.io/prospie/). 
