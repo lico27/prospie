@@ -83,6 +83,63 @@
   border-radius: 12px;
 }
 
+/* Instructions Card Styling */
+.instructions-card {
+  text-align: left;
+  padding: 2rem;
+}
+
+.instructions-section {
+  margin-bottom: 2rem;
+}
+
+.instructions-section:last-of-type {
+  margin-bottom: 1.5rem;
+}
+
+.section-heading {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #6fa3a8;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.instructions-text {
+  font-size: 1rem;
+  color: #c9c0de;
+  line-height: 1.7;
+  margin-bottom: 0;
+}
+
+.instructions-list {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: #c9c0de;
+}
+
+.instructions-list li {
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-bottom: 0.25rem;
+}
+
+.instructions-list li:last-child {
+  margin-bottom: 0;
+}
+
+.thank-you-message {
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #dcd3ed;
+  padding: 1.5rem 1rem 0.5rem 1rem;
+  margin-top: 1rem;
+  border-top: 1px solid rgba(142, 125, 179, 0.2);
+  line-height: 1.6;
+}
+
 .evaluation-form {
   display: flex;
   flex-direction: column;
@@ -640,9 +697,15 @@ button:focus-visible {
 
 /* Responsive adjustments */
 @media (max-width: 640px) {
+  .slider-wrapper {
+    gap: 0.5rem;
+  }
+
   .slider-label-left,
   .slider-label-right {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
+    flex-shrink: 0;
+    min-width: 0;
   }
 
   .entity-column {
