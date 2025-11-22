@@ -15,7 +15,7 @@ function App() {
               <div className="instructions-section">
                 <div className="section-heading">Introduction</div>
                 <div className="instructions-text">
-                  Hello! My name is Liam Cottrell and I'm an MSc Data Science student at UWE Bristol. For my final project, I'm developing prospie – a tool designed to help trusts fundraisers assess alignment between their organisations and potential funders. To check that prospie's scoring mechanism works in the way I want it to, I'm asking for experienced fundraisers to provide comparison ratings.
+                  Hello! My name is Liam Cottrell. I've been a trusts fundraiser since 2017, and I'm currently also an MSc Data Science student at UWE Bristol. For my final project, I'm developing prospie – a tool designed to help trusts fundraisers assess alignment between their organisations and potential funders. To check that prospie's scoring mechanism works in the way I want it to, I'm asking for experienced fundraisers to provide comparison ratings.
                   <br /><br />
                   As you know, trusts prospecting relies heavily on professional judgment when weighing up whether a funder is worth approaching. By comparing prospie's scores with yours, I can see whether the tool captures the kind of thinking that happens in real prospect research.
                   <br /><br />

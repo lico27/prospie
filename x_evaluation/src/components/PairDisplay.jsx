@@ -104,7 +104,7 @@ function PairDisplay({ funder, recipient }) {
 
             return (
               <div className="entity-section">
-                <h4>Recent Grants - {mostRecentYear} ({recentGrants.length})</h4>
+                <h4>Recent Grants - {mostRecentYear}</h4>
                 <h5>(Extracted From Accounts)</h5>
                 <div className="grants-table">
                   <div className="grants-table-header">
