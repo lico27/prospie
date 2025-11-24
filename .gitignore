@@ -45,5 +45,12 @@ __pycache__/
 /accounts
 *publicextract*
 
-# Inaccessible charities tracking
+#keeping track of inaccessible charity commission pages
 4_database_builder_pdfs/inaccessible_charities.json
+
+#checkpoint files
+*.pkl
+
+#notebook for testing functions
+eda_testing.ipynb
+
