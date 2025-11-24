@@ -73,6 +73,7 @@ def make_summary_df(funders_df, grants_df):
             "Standard deviation",
             "Smallest grant",
             "Largest grant",
+            "Earliest grant"
 
         ],
         "Value": [
@@ -100,7 +101,8 @@ def make_summary_df(funders_df, grants_df):
             grants_unique["amount"].median(),  
             grants_unique["amount"].std(),  
             grants_unique.loc[grants_unique["amount"] > 0, "amount"].min(),  
-            grants_unique["amount"].max()  
+            grants_unique["amount"].max(),
+            grants_df["year"].min()
         ]
     }
     return summary_data
@@ -169,7 +171,8 @@ def format_stats(row):
     """
     Formats statistics values based on their metric type.
     """
-    if row["Metric"] == "Range of grants received":
+    if row["Metric"] in ["Range of grants received", 
+                         "Earliest grant"]:
         return row["Value"]
     elif row["Metric"] in ["Mean recipients per funder",
                            "Mean areas per funder",
