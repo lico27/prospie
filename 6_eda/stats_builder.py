@@ -147,7 +147,15 @@ def calculate_stats(funders_df, grants_df):
     gcp_funders = funders_df[(funders_df["causes"].apply(len) == 1) & (funders_df["causes"].apply(lambda x: "General Charitable Purposes" in x))]
     gcp_pct = (len(gcp_funders) / len(funders_df)) * 100
 
-    return top_funders_share, top_recipients_share, repeat_grants_pct, avg_grants_per_pair, mean_grants_to_income, median_grants_to_income, gcp_pct
+    #find share of recipient matches from extracted grants
+    extracted_grants = grants_df[grants_df["source"] == "Accounts"]
+    extracted_matches = extracted_grants[
+        (extracted_grants["recipient_id"].notna()) &
+        (extracted_grants["recipient_id"].apply(lambda x: isinstance(x, (int, float)) or (isinstance(x, str) and x.isdigit())))
+    ]
+    match_rate = len(extracted_matches) / len(extracted_grants) * 100
+
+    return top_funders_share, top_recipients_share, repeat_grants_pct, avg_grants_per_pair, mean_grants_to_income, median_grants_to_income, gcp_pct, match_rate
 
 def make_calculated_df(stats):
     """
@@ -162,6 +170,7 @@ def make_calculated_df(stats):
         "Mean grants-to-income ratio",
         "Median grants-to-income ratio",
         "Percent of funders supporting General Charitable Purposes only",
+        "Percent of extracted grants matched with recipient data",
         ],
         "Value": stats
     }
@@ -201,6 +210,7 @@ def format_stats(row):
                            "Share of grants to top 10% recipients (by grant value)",
                            "Percent of recipients with multiple grants from same funder",
                            "Percent of funders supporting General Charitable Purposes only",
+                           "Percent of extracted grants matched with recipient data",
                            "Mean grants-to-income ratio",
                            "Median grants-to-income ratio"]:
         return f"{row['Value']:,.1f}%"
