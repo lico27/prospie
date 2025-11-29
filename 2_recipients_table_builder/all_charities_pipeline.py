@@ -145,3 +145,50 @@ def get_recipient_classifications(all_recipient_ids):
     )
 
     return beneficiaries, causes, recipient_beneficiaries, recipient_causes
+
+def get_recipient_objectives(all_recipient_ids):
+    """
+    Gets data from Charity Commission json extract for recipients and their charitable objectives.
+    """
+
+    objectives_dict = {}
+    json_path = os.path.join(os.path.dirname(__file__), "publicextract.charity_governing_document.json")
+
+    with open(json_path, "r", encoding="utf-8-sig") as f:
+        first_line = f.readline().strip()
+
+        #process each line
+        for line in f:
+            if line.strip() == "]":
+                break
+
+            #remove whitespace and commas
+            line = line.strip()
+            if line.startswith(","):
+                line = line[1:]
+            if line.endswith(","):
+                line = line[:-1]
+
+            #skip empty lines
+            if not line:
+                continue
+
+            try:
+                #parse json object
+                doc = json.loads(line)
+
+                #filter to registered charities that exist already
+                if (doc.get("linked_charity_number") == 0 and
+                    str(doc.get("registered_charity_number")) in all_recipient_ids):
+
+                    recipient_id = str(doc.get("registered_charity_number"))
+                    charitable_objects = doc.get("charitable_objects", "")
+
+                    if charitable_objects and recipient_id not in objectives_dict:
+                        objectives_dict[recipient_id] = charitable_objects
+
+            except json.JSONDecodeError as e:
+                print(f"Error parsing governing document line: {e}")
+                continue
+
+    return objectives_dict

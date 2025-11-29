@@ -1,7 +1,7 @@
 import os
 import sys
 from dotenv import load_dotenv
-from all_charities_pipeline import get_all_charities, get_recipient_classifications
+from all_charities_pipeline import get_all_charities, get_recipient_classifications, get_recipient_objectives
 
 #add project root to path for data_importer import
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -18,9 +18,11 @@ if __name__ == "__main__":
         #get all charities from cc as potential recipients
         all_charities = get_all_charities()
 
-        #get recipient classifications
+        #get recipient classifications and objectives
         all_recipient_ids = set(all_charities["recipient_id"].astype(str))
         beneficiaries, causes, recipient_beneficiaries, recipient_causes = get_recipient_classifications(all_recipient_ids)
+        objectives_dict = get_recipient_objectives(all_recipient_ids)
+        all_charities["recipient_objectives"] = all_charities["recipient_id"].astype(str).map(objectives_dict)
 
         #dictionary to hold tables and their keys
         tables = {
