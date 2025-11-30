@@ -179,6 +179,15 @@ function PairDisplay({ funder, recipient }) {
             </div>
           )}
 
+          {recipient.recipient_objectives && (
+            <div className="entity-section">
+              <h4>objectives</h4>
+              <div className="scrollable-text-box">
+                <p>{recipient.recipient_objectives}</p>
+              </div>
+            </div>
+          )}
+
           {recipient.areas && recipient.areas.length > 0 && (
             <div className="entity-section">
               <h4>Geographic Areas</h4>
