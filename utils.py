@@ -91,6 +91,24 @@ def get_table_from_supabase(url, key, table_name, batch_size=1000, delay=0.2, fi
             query = query.order("ben_id")
         elif table_name == "causes":
             query = query.order("cause_id")
+        elif table_name == "areas":
+            query = query.order("area_id")
+        elif table_name == "financials":
+            query = query.order("financials_id")
+        elif table_name == "funder_causes":
+            query = query.order("funder_causes_id")
+        elif table_name == "funder_areas":
+            query = query.order("funder_areas_id")
+        elif table_name == "funder_beneficiaries":
+            query = query.order("funder_ben_id")
+        elif table_name == "funder_grants":
+            query = query.order("funder_grants_id")
+        elif table_name == "funder_financials":
+            query = query.order("funder_fin_id")
+        elif table_name == "recipient_grants":
+            query = query.order("recipient_grants_id")
+        elif table_name == "recipient_areas":
+            query = query.order("recipient_areas_id")
         elif table_name == "recipient_beneficiaries":
             query = query.order("recipient_ben_id")
         elif table_name == "recipient_causes":
