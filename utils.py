@@ -121,3 +121,19 @@ def get_table_from_supabase(url, key, table_name, batch_size=1000, delay=0.2, fi
     df = pd.DataFrame(all_data)
 
     return df
+
+def clean_text(text):
+    """
+    Cleans a string.
+    """
+    if not isinstance(text, str):
+        return text
+
+    #remove null bytes and prolem characters
+    text = text.replace("\x00", "")
+    text = "".join(char for char in text if ord(char) >= 32 or char in ["\n", "\t", "\r"])
+
+    #strip spaces and make uppercase
+    text = text.strip().upper()
+
+    return text if text else None
