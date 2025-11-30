@@ -1,5 +1,6 @@
 import pandas as pd
 from sentence_transformers import SentenceTransformer, util
+import time
 
 def test_embedding_models(
     models_list,
@@ -15,8 +16,10 @@ def test_embedding_models(
     """
     results = []
     current_pairs = evaluation_pairs.copy()
+    overall_start = time.time()
 
     for model_name in models_list:
+        model_start = time.time()
         model = SentenceTransformer(model_name)
 
         #align pairs
@@ -31,7 +34,7 @@ def test_embedding_models(
             how="left"
         )
 
-        #make embeddings for the correctly paired texts
+        #make embeddings
         funders_ems = model.encode(aligned_pairs[funder_text_col].tolist())
         recipients_ems = model.encode(aligned_pairs[recipient_text_col].tolist())
 
@@ -51,7 +54,13 @@ def test_embedding_models(
             "correlation": corr
         })
 
+        model_time = time.time() - model_start
+        print(f"{model_name}: {model_time:.1f}s")
+
     results_df = pd.DataFrame(results)
+
+    total_time = time.time() - overall_start
+    print(f"\nTotal test time: {total_time:.1f}s")
 
     return results_df, current_pairs
 
