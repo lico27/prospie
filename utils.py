@@ -78,6 +78,26 @@ def get_table_from_supabase(url, key, table_name, batch_size=1000, delay=0.2, fi
         if filter_recipients:
             query = query.eq("is_recipient", True)
 
+        #order by primary key
+        if table_name == "recipients":
+            query = query.order("recipient_id")
+        elif table_name == "funders":
+            query = query.order("registered_num")
+        elif table_name == "grants":
+            query = query.order("grant_id")
+        elif table_name == "evaluation_pairs":
+            query = query.order("id")
+        elif table_name == "beneficiaries":
+            query = query.order("ben_id")
+        elif table_name == "causes":
+            query = query.order("cause_id")
+        elif table_name == "recipient_beneficiaries":
+            query = query.order("recipient_ben_id")
+        elif table_name == "recipient_causes":
+            query = query.order("recipient_cause_id")
+        else:
+            raise ValueError(f"Unknown table '{table_name}' - please add ordering column to get_table_from_supabase()")
+
         #batch imports
         try:
             response = query.limit(batch_size).offset(offset).execute()
