@@ -1,4 +1,5 @@
 import pandas as pd
+import re
 from names_dataset import NameDataset
 nd = NameDataset()
 
@@ -71,3 +72,14 @@ def check_overlap(list1, list2):
     if not list1 or not list2:
         return False
     return len(set(list1) & set(list2)) > 0
+
+def clean_start_of_text(text):
+    """
+    Removes non-alphanumeric characters from the start of text columns.
+    """
+    if not isinstance(text, str) or not text:
+        return text
+
+    cleaned = re.sub(r'^[^a-zA-Z0-9]+', '', text)
+    
+    return cleaned if cleaned else None
