@@ -80,6 +80,14 @@ def clean_start_of_text(text):
     if not isinstance(text, str) or not text:
         return text
 
-    cleaned = re.sub(r'^[^a-zA-Z0-9]+', '', text)
+    cleaned = re.sub(r"^[^a-zA-Z0-9]+", "", text)
     
     return cleaned if cleaned else None
+
+def update_join_table(df, id_map, valid_ids):
+    """
+    Updates recipient id in join tables to send back to Supabase.
+    """
+    updated = df.copy()
+    updated["recipient_id"] = updated["recipient_id"].map(lambda x: id_map.get(x, x))
+    return updated[updated["recipient_id"].isin(valid_ids)]

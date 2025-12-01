@@ -1,6 +1,7 @@
 import pandas as pd
 from supabase import create_client
 import time
+import re
 
 def clean_data(tables, upper_cols, int_cols):
     """
@@ -95,6 +96,8 @@ def get_table_from_supabase(url, key, table_name, batch_size=1000, delay=0.2, fi
             query = query.order("area_id")
         elif table_name == "financials":
             query = query.order("financials_id")
+        elif table_name == "list_entries":
+            query = query.order("list_id")
         elif table_name == "funder_causes":
             query = query.order("funder_causes_id")
         elif table_name == "funder_areas":
@@ -105,6 +108,8 @@ def get_table_from_supabase(url, key, table_name, batch_size=1000, delay=0.2, fi
             query = query.order("funder_grants_id")
         elif table_name == "funder_financials":
             query = query.order("funder_fin_id")
+        elif table_name == "funder_list":
+            query = query.order("funder_list_id")
         elif table_name == "recipient_grants":
             query = query.order("recipient_grants_id")
         elif table_name == "recipient_areas":
@@ -150,6 +155,7 @@ def clean_text(text):
     #remove null bytes and prolem characters
     text = text.replace("\x00", "")
     text = "".join(char for char in text if ord(char) >= 32 or char in ["\n", "\t", "\r"])
+    text = re.sub(r"^[^a-zA-Z0-9]+", "", text)
 
     #strip spaces and make uppercase
     text = text.strip().upper()
