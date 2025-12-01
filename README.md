@@ -11,6 +11,8 @@ prospie is an AI tool to support trusts fundraisers in the third sector. prospie
 5. Gets information from [The List](https://the-list.uk/) and adds to database
 6. EDA - explores, cleans and visualises the data   
     6.1. Reprocesses PDFs to extract accounts sections using Claude LLM instead of regex
+7. Compares embedding models to select the most suitable for the project
+8. Prepares data ready for modelling
 - A frontend to interact with the app
 - An evaluation form to gather professional fundraisers' opinions on the alignment of a sample of funder-recipient pairs, to assess the performance of the app 
 
