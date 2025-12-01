@@ -7,6 +7,7 @@ from all_charities_pipeline import get_recipient_objectives
 
 #add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from utils import clean_text
 
 #get keys from env
 load_dotenv()
@@ -59,7 +60,7 @@ def import_objectives(objectives_dict):
         for recipient_id, objectives in batch_items:
             try:
                 response = supabase.table("recipients").update({
-                    "recipient_objectives": objectives
+                    "recipient_objectives": clean_text(objectives)
                 }).eq("recipient_id", recipient_id).execute()
 
                 success_count += 1
