@@ -10,7 +10,7 @@ prospie is an AI tool to support trusts fundraisers in the third sector. prospie
 4. Builds a database of grants and recipients using PDFs of official charity accounts
 5. Gets information from [The List](https://the-list.uk/) and adds to database
 6. EDA - explores, cleans and visualises the data   
-    6.1. Stores checkpoints locally
+    6.1. Stores checkpoints locally     
     6.2.Reprocesses PDFs to extract accounts sections using Claude LLM instead of regex
 7. Compares embedding models to select the most suitable for the project
 8. Prepares data ready for modelling
