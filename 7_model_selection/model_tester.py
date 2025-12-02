@@ -6,7 +6,7 @@ def test_embedding_models(
     models_list,
     funders_df,
     recipients_df,
-    evaluation_pairs,
+    embedding_pairs,
     funder_text_col="funders_text",
     recipient_text_col="recipients_text",
     rating_col="my_rating"
@@ -15,7 +15,7 @@ def test_embedding_models(
     Tests various embedding models and calculate the correlation with their output and my own ratings of funder-recipient pairs.
     """
     results = []
-    current_pairs = evaluation_pairs.copy()
+    current_pairs = embedding_pairs.copy()
     overall_start = time.time()
 
     for model_name in models_list:

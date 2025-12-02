@@ -118,6 +118,8 @@ def get_table_from_supabase(url, key, table_name, batch_size=1000, delay=0.2, fi
             query = query.order("recipient_ben_id")
         elif table_name == "recipient_causes":
             query = query.order("recipient_cause_id")
+        elif table_name == "embedding_pairs":
+            query = query.order("id")
         else:
             raise ValueError(f"Unknown table '{table_name}' - please add ordering column to get_table_from_supabase()")
 
