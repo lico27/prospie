@@ -16,8 +16,8 @@ prospie is an AI tool to support trusts fundraisers in the third sector. prospie
     7.1. Compares embedding models to select the most suitable for the project      
     7.2. Experiments with different approaches to embedding the text to be used in semantic similarity comparisons      
 8. Prepares data ready for modelling
-- A frontend to interact with the app
-- An evaluation form to gather professional fundraisers' opinions on the alignment of a sample of funder-recipient pairs, to assess the performance of the app 
+9. An evaluation form to gather professional fundraisers' opinions on the alignment of a sample of funder-recipient pairs, to assess the performance of the app
+- A frontend to interact with the app 
 - An informed scoring logic to calculate the alignment score of a user's charity and their chosen funder
 
 ## How to...
