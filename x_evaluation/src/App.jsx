@@ -4,6 +4,7 @@ import EvaluationForm from "./components/EvaluationForm"
 
 function App() {
   const [showForm, setShowForm] = useState(false)
+  const [consentGiven, setConsentGiven] = useState(false)
 
   return (
     <div className="evaluation-section">
@@ -61,7 +62,26 @@ function App() {
                 Thank you for contributing your expertise! Your input will help develop better tools for the fundraising sector.
               </div>
             </div>
-            <button onClick={() => setShowForm(true)}>Start</button>
+
+            <div className="consent-section">
+              <label className="consent-checkbox">
+                <input
+                  type="checkbox"
+                  checked={consentGiven}
+                  onChange={(e) => setConsentGiven(e.target.checked)}
+                />
+                <span className="consent-text">
+                  I consent to my responses being used to guide and improve this research. I understand that my evaluations will contribute to the development of prospie as part of an MSc dissertation at UWE Bristol, and that I can withdraw from this survey at any point by closing the browser window before submitting.
+                </span>
+              </label>
+            </div>
+
+            <button
+              onClick={() => setShowForm(true)}
+              disabled={!consentGiven}
+            >
+              Start
+            </button>
           </>
         ) : (
           <EvaluationForm />
