@@ -2,6 +2,67 @@ import pandas as pd
 from sentence_transformers import SentenceTransformer, util
 import time
 
+#define constants
+RECIPIENTS_SECTIONS = ["recipient_activities", "recipient_objectives"]
+COMBINATIONS_DICT = {
+    # --- 2-column combinations ---
+    "acts_objs": (["activities", "objectives"], RECIPIENTS_SECTIONS),
+    "acts_objacts": (["activities", "objectives_activities"], RECIPIENTS_SECTIONS),
+    "acts_achs": (["activities", "achievements_performance"], RECIPIENTS_SECTIONS),
+    "acts_policy": (["activities", "grant_policy"], RECIPIENTS_SECTIONS),
+
+    "objs_objacts": (["objectives", "objectives_activities"], RECIPIENTS_SECTIONS),
+    "objs_achs": (["objectives", "achievements_performance"], RECIPIENTS_SECTIONS),
+    "objs_policy": (["objectives", "grant_policy"], RECIPIENTS_SECTIONS),
+
+    # --- 3-column combinations ---
+    "acts_objs_objacts": (
+        ["activities", "objectives", "objectives_activities"], RECIPIENTS_SECTIONS
+    ),
+    "acts_objs_achs": (
+        ["activities", "objectives", "achievements_performance"], RECIPIENTS_SECTIONS
+    ),
+    "acts_objs_policy": (
+        ["activities", "objectives", "grant_policy"], RECIPIENTS_SECTIONS
+    ),
+    "acts_objacts_achs": (
+        ["activities", "objectives_activities", "achievements_performance"], RECIPIENTS_SECTIONS
+    ),
+    "acts_objacts_policy": (
+        ["activities", "objectives_activities", "grant_policy"], RECIPIENTS_SECTIONS
+    ),
+    "acts_achs_policy": (
+        ["activities", "achievements_performance", "grant_policy"], RECIPIENTS_SECTIONS
+    ),
+
+    "objs_objacts_achs": (
+        ["objectives", "objectives_activities", "achievements_performance"], RECIPIENTS_SECTIONS
+    ),
+    "objs_objacts_policy": (
+        ["objectives", "objectives_activities", "grant_policy"], RECIPIENTS_SECTIONS
+    ),
+    "objs_achs_policy": (
+        ["objectives", "achievements_performance", "grant_policy"], RECIPIENTS_SECTIONS
+    ),
+
+    # --- 4-column combinations ---
+    "acts_objs_objacts_achs": (
+        ["activities", "objectives", "objectives_activities", "achievements_performance"], RECIPIENTS_SECTIONS
+    ),
+    "acts_objs_objacts_policy": (
+        ["activities", "objectives", "objectives_activities", "grant_policy"], RECIPIENTS_SECTIONS
+    ),
+    "acts_objs_achs_policy": (
+        ["activities", "objectives", "achievements_performance", "grant_policy"], RECIPIENTS_SECTIONS
+    ),
+    "acts_objacts_achs_policy": (
+        ["activities", "objectives_activities", "achievements_performance", "grant_policy"], RECIPIENTS_SECTIONS
+    ),
+    "objs_objacts_achs_policy": (
+        ["objectives", "objectives_activities", "achievements_performance", "grant_policy"], RECIPIENTS_SECTIONS
+    ),
+}
+
 def test_embedding_approach(
     model_name,
     funders_df,
