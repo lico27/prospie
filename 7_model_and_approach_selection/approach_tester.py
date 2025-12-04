@@ -88,13 +88,23 @@ def test_embedding_approach(
     if isinstance(recipient_text_cols, str):
         recipient_text_cols = [recipient_text_cols]
 
+    #check cols are available
+    available_funder_cols = [col for col in funder_text_cols if col in funders_to_test.columns]
+    available_recipient_cols = [col for col in recipient_text_cols if col in recipients_to_test.columns]
+
+    #raise error if no columns are available
+    if len(available_funder_cols) == 0:
+        raise ValueError(f"Funder does not have {funder_text_cols}. Try {funders_to_test.columns.tolist()}")
+    if len(available_recipient_cols) == 0:
+        raise ValueError(f"Recipient does not have {recipient_text_cols}. Try {recipients_to_test.columns.tolist()}")
+
     #concatenate if necessary
-    funders_to_test["text_to_embed"] = funders_to_test[funder_text_cols[0]].fillna("")
-    for col in funder_text_cols[1:]:
+    funders_to_test["text_to_embed"] = funders_to_test[available_funder_cols[0]].fillna("")
+    for col in available_funder_cols[1:]:
         funders_to_test["text_to_embed"] += " " + funders_to_test[col].fillna("")
 
-    recipients_to_test["text_to_embed"] = recipients_to_test[recipient_text_cols[0]].fillna("")
-    for col in recipient_text_cols[1:]:
+    recipients_to_test["text_to_embed"] = recipients_to_test[available_recipient_cols[0]].fillna("")
+    for col in available_recipient_cols[1:]:
         recipients_to_test["text_to_embed"] += " " + recipients_to_test[col].fillna("")
 
     #make lowercase
