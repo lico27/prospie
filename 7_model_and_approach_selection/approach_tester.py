@@ -187,7 +187,11 @@ def compare_approaches(
     total_time = time.time() - overall_start
 
     print(f"\nTotal time: {total_time:.1f}s")
-    print(f"Best approach: {results_df.loc[results_df['correlation'].idxmax(), 'approach']} "
-          f"(r={results_df['correlation'].max():.3f})")
+
+    #show top 5 results
+    top_5 = results_df.nlargest(5, "correlation")
+    print("Best approach(es):")
+    for idx, row in top_5.iterrows():
+        print(f"  {row['approach']}: r={row['correlation']:.3f}, time={row['time_seconds']:.1f}s")
 
     return results_df, pairs_with_scores
