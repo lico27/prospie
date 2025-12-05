@@ -163,3 +163,70 @@ def clean_text(text):
     text = text.strip().upper()
 
     return text if text else None
+
+def build_relationship_cols(base_df, join_key, relationships):
+    """
+    Merges and groups data to build relationship columns between join/main tabls.
+    """
+    result_df = base_df.copy()
+
+    for rel in relationships:
+        grouped = rel["join_table"].merge(rel["lookup_table"], on=rel["key"])
+        grouped = grouped.groupby(join_key)[rel["value_col"]].apply(list).reset_index()
+        grouped.columns = [join_key, rel["result_col"]]
+        result_df = result_df.merge(grouped, on=join_key, how="left")
+
+        #replace nan values with empty lists
+        result_df[rel["result_col"]] = result_df[rel["result_col"]].apply(
+            lambda x: x if isinstance(x, list) else []
+        )
+
+    return result_df
+
+def build_financial_history(base_df, join_key, funder_financials, financials_table):
+    """
+    Builds income and expenditure history columns for funders dataframe.
+    """
+    result_df = base_df.copy()
+
+    #get full financial records and separate into income and expenditure
+    financial_history = funder_financials.merge(financials_table, on="financials_id")
+    income_history = financial_history[financial_history["financials_type"] == "income"]
+    expenditure_history = financial_history[financial_history["financials_type"] == "expenditure"]
+
+    #make financials dicts
+    income_by_funder = income_history.groupby(join_key).apply(
+        lambda x: dict(zip(x["financials_year"], x["financials_value"]))
+    ).reset_index()
+    income_by_funder.columns = [join_key, "income_history"]
+
+    expenditure_by_funder = expenditure_history.groupby(join_key).apply(
+        lambda x: dict(zip(x["financials_year"], x["financials_value"]))
+    ).reset_index()
+    expenditure_by_funder.columns = [join_key, "expenditure_history"]
+
+    #merge and replace nan values
+    result_df = result_df.merge(income_by_funder, on=join_key, how="left")
+    result_df = result_df.merge(expenditure_by_funder, on=join_key, how="left")
+    result_df["income_history"] = result_df["income_history"].apply(lambda x: x if isinstance(x, dict) else {})
+    result_df["expenditure_history"] = result_df["expenditure_history"].apply(lambda x: x if isinstance(x, dict) else {})
+
+    return result_df
+
+def add_grant_statistics(base_df, join_key, funder_grants, grants_table):
+    """
+    Adds grant statistics columns to the funders dataframe.
+    """
+    result_df = base_df.copy()
+
+    grants_stats = funder_grants.merge(grants_table, on="grant_id")
+    grants_agg = grants_stats.groupby(join_key).agg({
+        "grant_id": "count",
+        "amount": ["sum", "mean", "median"]
+    }).reset_index()
+    grants_agg.columns = [join_key, "num_grants", "total_given", "avg_grant", "median_grant"]
+
+    result_df = result_df.merge(grants_agg, on=join_key, how="left")
+    result_df["num_grants"] = result_df["num_grants"].astype("Int64")
+
+    return result_df
