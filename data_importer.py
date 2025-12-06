@@ -69,7 +69,7 @@ def pipe_to_supabase(df, table, unique_key, url, key, batch_size=1000, delay=0.5
             if i + batch_size < total_records:
                 time.sleep(delay)
 
-        print(f"✓ Successfully upserted all {total_records} records to {table}")
+        print(f"Successfully upserted all {total_records} records to {table}")
     except Exception as e:
         print(f"✗ Error upserting to {table} at batch {batch_num}: {e}")
         raise
