@@ -1,9 +1,10 @@
 import pandas as pd
 import numpy as np
 import json
+import time
 from supabase import create_client
 
-def pipe_to_supabase(df, table, unique_key, url, key, batch_size=1000):
+def pipe_to_supabase(df, table, unique_key, url, key, batch_size=1000, delay=0.5):
 
     #create client instance
     supabase = create_client(url, key)
@@ -63,7 +64,11 @@ def pipe_to_supabase(df, table, unique_key, url, key, batch_size=1000):
 
             #pipe batch to supabase
             supabase.table(table).upsert(batch, on_conflict = unique_key).execute()
-            
+
+            #add delay
+            if i + batch_size < total_records:
+                time.sleep(delay)
+
         print(f"✓ Successfully upserted all {total_records} records to {table}")
     except Exception as e:
         print(f"✗ Error upserting to {table} at batch {batch_num}: {e}")
