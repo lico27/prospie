@@ -120,6 +120,10 @@ def get_table_from_supabase(url, key, table_name, batch_size=1000, delay=0.2, fi
             query = query.order("recipient_cause_id")
         elif table_name == "embedding_pairs":
             query = query.order("id")
+        elif table_name == "logic_pairs":
+            query = query.order("id")
+        elif table_name == "area_hierarchy":
+            query = query.order("parent_area_id")
         else:
             raise ValueError(f"Unknown table '{table_name}' - please add ordering column to get_table_from_supabase()")
 
