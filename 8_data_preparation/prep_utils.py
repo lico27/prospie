@@ -1,5 +1,4 @@
 import pandas as pd
-import spacy
 import re
 
 def extract_areas(row, section_cols, nlp):
