@@ -46,7 +46,7 @@ __pycache__/
 *publicextract*
 
 #keeping track of inaccessible charity commission pages
-4_database_builder_pdfs/inaccessible_charities.json
+04_database_builder_pdfs/inaccessible_charities.json
 
 #checkpoint files
 *.pkl

@@ -14,7 +14,7 @@ spec = importlib.util.spec_from_file_location("root_utils", root_utils_path)
 root_utils = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(root_utils)
 get_table_from_supabase = root_utils.get_table_from_supabase
-sys.path.insert(0, os.path.join(project_root, "4_database_builder_pdfs"))
+sys.path.insert(0, os.path.join(project_root, "04_database_builder_pdfs"))
 from pdf_text_extractor import get_accounts_text
 from llm_sections_extractor import extract_sections
 
