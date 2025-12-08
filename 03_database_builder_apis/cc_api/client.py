@@ -10,20 +10,8 @@ load_dotenv()
 api_key = os.getenv("API_KEY")
 
 def call_cc_api(operation, hdr, c_nums, charity_data, columns, df_rows):
-
 	"""
 	Calls the Charity Commission API to get data for a list of charity numbers.
-
-	Parameters
-	----------
-	operation : list of API operations to call for each charity number.
-	hdr : dictionary of headers to use for the API request.
-	c_nums : list of charity numbers to get data for.
-	charity_data : dictionary to store the data for each charity number.
-	columns : list of the columns/variables required from the API.
-	df_rows : list to store the data for each charity number per row.
-
-	Returns a dataframe containing the data for each charity number.
 	"""
 
 	for num in c_nums:
@@ -76,13 +64,6 @@ def call_cc_api(operation, hdr, c_nums, charity_data, columns, df_rows):
 def call_financial_history_api(c_nums):
 	"""
 	Calls the Charity Commission API to get financial history data for a list of charity numbers.
-	Returns raw financial data with minimal processing.
-
-	Parameters
-	----------
-	c_nums : list of charity numbers to get data for.
-
-	Returns a list of dictionaries containing raw financial data from the API.
 	"""
 
 	hdr = {
@@ -123,7 +104,9 @@ def call_financial_history_api(c_nums):
 	return financial_data
 
 def extract_cc_data(c_nums):
-
+	"""
+	Extract. data from Charity Commission API.
+	"""
 	#define api variables
 	hdr ={
 		"Cache-Control": "no-cache",

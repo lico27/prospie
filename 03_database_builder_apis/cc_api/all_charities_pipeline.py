@@ -4,6 +4,10 @@ import os
 from utils import clean_data
 
 def get_all_charities():
+    """
+    Loads the Charity Commission json extract and gets required data for registered charities.
+    """
+
     #load json file and filter for registered charities
     registered_charities = []
     json_path = os.path.join(os.path.dirname(__file__), "publicextract.charity.json")

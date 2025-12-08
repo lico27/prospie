@@ -11,6 +11,9 @@ from utils import clean_data
 
 def get_recipient_data(recipient_grants, recipients_info, areas, supabase_url, supabase_key):
 
+	"""
+	Gets all recipient data and builds tables ready to pipe to supabase.
+	"""
 	#handle empty recipient_grants
 	if recipient_grants.empty or len(recipient_grants) == 0:
 		empty_recipients = pd.DataFrame(columns=["recipient_id", "recipient_name", "recipient_activities"])

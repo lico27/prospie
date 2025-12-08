@@ -2,10 +2,7 @@ import pandas as pd
 from cc_api.transformers import transform_classification_table, transform_join_tables
 
 def build_classifications_tables(df):
-
     """
-    Takes Charity Commission data and explodes/normalizes the classification lists into columns.
-    Drops unnecessary columns and rows.
     Builds classification and join tables ready to be piped to the database.
     """
 

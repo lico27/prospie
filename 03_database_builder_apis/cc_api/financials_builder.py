@@ -3,7 +3,9 @@ from cc_api.client import call_financial_history_api
 from cc_api.transformers import transform_financials_df, transform_financials_long, transform_financials_join
 
 def build_financials_tables(c_nums):
-
+    """
+    Builds financials tables from a list of charity numbers.
+    """
     try:
         #call api and make df
         financial_data = call_financial_history_api(c_nums)

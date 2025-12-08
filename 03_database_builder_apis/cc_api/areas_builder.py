@@ -92,7 +92,9 @@ def transform_area_columns(df):
     return areas, all_areas
 
 def build_areas_tables(df, supabase_url, supabase_key):
-
+    """
+    Builds tables for areas and joins them with the main table.
+    """
     areas, all_areas = transform_area_columns(df)
 
     #connect to supabase and query existing areas

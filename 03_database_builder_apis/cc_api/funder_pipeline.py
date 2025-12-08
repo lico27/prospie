@@ -10,7 +10,9 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 from utils import clean_data
 
 def get_funder_data(c_nums, supabase_url, supabase_key):
-
+	"""
+	Gets all funder data from Charity Commission API and builds tables ready to pipe to supabase.
+	"""
 	df = extract_cc_data(c_nums)
 
 	#rename columns to match schema
