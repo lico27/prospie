@@ -4,6 +4,9 @@ from pdf_text_extractor import get_accounts_text, get_accounts_sections, get_pre
 from pdf_utils import clean_tables, clean_dictionaries
 
 def get_accounts_data(c_nums, api_key, skip_list=None):
+    """
+    Calls functions to download/prepare accounts and extract data from them.
+    """
 
     #download and save accounts locally
     accounts = get_accounts(c_nums)

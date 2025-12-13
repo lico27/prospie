@@ -5,6 +5,9 @@ from supabase import create_client
 from spellchecker import SpellChecker
 
 def check_accounts(accounts_content, charity_num=None):
+    """
+    Checks the validity of an accounts file.
+    """
 
     prefix = f"[{charity_num}] " if charity_num else ""
 
@@ -132,17 +135,17 @@ def find_next_section(text, start_pos):
         Finds the next major section heading.
         """
         common_sections = [
-            'Financial', 'Structure', 'Governance', 'Risk', 'Plans', 'Funding', 'Reserves',
-            'Income', 'Expenditure', 'Trustees', 'Reference', 'Administrative', 'Statement',
-            'Balance', 'Accounts', 'Notes', 'Independent', 'Auditor', 'Basis', 'Accounting',
-            'Investment', 'Funds', 'Liabilities', 'Assets', 'Cashflow', 'Cash Flow',
-            'Restricted', 'Unrestricted', 'Endowment', 'Resources', 'Reconciliation',
-            'Related', 'Remuneration', 'Pension', 'Commitments', 'Contingent', 'Legal'
+            "Financial", "Structure", "Governance", "Risk", "Plans", "Funding", "Reserves",
+            "Income", "Expenditure", "Trustees", "Reference", "Administrative", "Statement",
+            "Balance", "Accounts", "Notes", "Independent", "Auditor", "Basis", "Accounting",
+            "Investment", "Funds", "Liabilities", "Assets", "Cashflow", "Cash Flow",
+            "Restricted", "Unrestricted", "Endowment", "Resources", "Reconciliation",
+            "Related", "Remuneration", "Pension", "Commitments", "Contingent", "Legal"
         ]
 
         #give headings options
-        possible_words = '|'.join(common_sections)
-        possible_sections = rf'(?:\n\s*\n\s*|\n)([A-Z][A-Za-z]+(?:\s+[A-Za-z]+)+|{possible_words})(?:\s*\n|\s*$)'
+        possible_words = "|".join(common_sections)
+        possible_sections = rf"(?:\n\s*\n\s*|\n)([A-Z][A-Za-z]+(?:\s+[A-Za-z]+)+|{possible_words})(?:\s*\n|\s*$)"
 
         match = re.search(possible_sections, text[start_pos:], re.IGNORECASE)
         if match:
@@ -158,7 +161,7 @@ def clean_tables(df, cols):
             df.loc[:, col] = (df[col]
                                     .fillna("")
                                     .astype(str)
-                                    .str.replace('\n', ' ', regex=False)
+                                    .str.replace("\n", " ", regex=False)
                                     .str.strip()
                                     .str.upper())
             df.loc[df[col] == "", col] = None
@@ -170,6 +173,9 @@ def clean_tables(df, cols):
     return df
 
 def clean_dictionaries(list_of_dicts):
+    """
+    Cleans a list of dictionaries and makes them fit the database schema.
+    """
     if not list_of_dicts or not isinstance(list_of_dicts, list):
         return list_of_dicts
 
@@ -183,7 +189,7 @@ def clean_dictionaries(list_of_dicts):
                     try:
                         new_item[key] = float(value)
                     except (ValueError, TypeError):
-                        new_item[key] = value.replace('\n', ' ').strip().upper()
+                        new_item[key] = value.replace("\n", " ").strip().upper()
                 elif isinstance(value, (int, float)):
                     new_item[key] = float(value)
                 else:

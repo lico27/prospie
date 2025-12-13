@@ -3,6 +3,9 @@ import time
 from supabase import create_client
 
 def build_grants_table(df):
+    """
+    Builds a grants table from a dataframe of funder data.
+    """
     grants_list = []
 
     for i, row in df.iterrows():
@@ -36,7 +39,10 @@ def build_grants_table(df):
     return grants
 
 def build_funder_grants_table(df):
-    #build funder_grants join table from grants
+    """
+    Builds a join table to link grants and funders.
+    """
+
     funder_grants = df[["charity_num", "grant_id"]].copy()
     funder_grants = funder_grants.rename(columns={"charity_num": "registered_num"})
     funder_grants = funder_grants.drop_duplicates()
@@ -45,6 +51,9 @@ def build_funder_grants_table(df):
     return funder_grants
 
 def build_recipients_table(df):
+    """Builds a table of recipients from their grants data.
+    """
+
     #get unique recipient names and filter for nones
     unique_recipients = df["recipient_name"].unique()
     unique_recipients = [name for name in unique_recipients if name and str(name).strip()]
@@ -63,6 +72,9 @@ def build_recipients_table(df):
     return recipients
 
 def build_recipient_grants_table(recipients, grants, key, url):
+    """
+    Builds a join table to link recipients and grants.
+    """
     
     supabase = create_client(url, key)
 

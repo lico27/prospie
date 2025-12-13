@@ -88,8 +88,10 @@ def get_accounts_sections(df):
 
     return df
 
-def get_previous_grants(api_key, df, skip_list=None):
-
+def get_previous_grants(api_key, df, skip_list=None):   
+    """
+    Extracts grants information from each set of accounts.
+    """
     #make new columns if needed
     if "individual_grants" not in df.columns:
         df["individual_grants"] = pd.Series(dtype="object")

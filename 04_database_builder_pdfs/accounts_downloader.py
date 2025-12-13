@@ -5,8 +5,12 @@ import time
 import os
 import json
 from datetime import datetime
+from utils import ocr_accounts
 
 def get_accounts_urls(c_nums):
+    """
+    Fetches the accounts pages on the Charity Commission website for a list of registered charity numbers.
+    """
 
     accounts_data = []
     inaccessible_accounts = []
@@ -131,6 +135,9 @@ def get_accounts_urls(c_nums):
     return accounts
 
 def download_accounts(url, path):
+    """
+    Downloads accounts from Charity Commission and saveslocally.
+    """
 
     if url is not None:
 
@@ -159,7 +166,9 @@ def get_accounts(c_nums):
     return accounts
 
 def save_accounts(accounts):
-    from utils import ocr_accounts
+    """
+    Calls functions to download accounts and run ocr.
+    """
 
     for i, row in accounts.iterrows():
         accounts_url = row["url"]
