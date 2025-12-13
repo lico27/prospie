@@ -66,6 +66,31 @@ def get_table_from_supabase(url, key, table_name, batch_size=1000, delay=0.2, fi
     Fetches table data from Supabase with batching to avoid timeouts
     """
 
+    PRIMARY_KEYS = {
+        "recipients": "recipient_id",
+        "funders": "registered_num",
+        "grants": "grant_id",
+        "evaluation_pairs": "id",
+        "beneficiaries": "ben_id",
+        "causes": "cause_id",
+        "areas": "area_id",
+        "financials": "financials_id",
+        "list_entries": "list_id",
+        "funder_causes": "funder_causes_id",
+        "funder_areas": "funder_areas_id",
+        "funder_beneficiaries": "funder_ben_id",
+        "funder_grants": "funder_grants_id",
+        "funder_financials": "funder_fin_id",
+        "funder_list": "funder_list_id",
+        "recipient_grants": "recipient_grants_id",
+        "recipient_areas": "recipient_areas_id",
+        "recipient_beneficiaries": "recipient_ben_id",
+        "recipient_causes": "recipient_cause_id",
+        "embedding_pairs": "id",
+        "logic_pairs": "id",
+        "area_hierarchy": "parent_area_id"
+    }
+
     #create client instance
     supabase = create_client(url, key)
 
@@ -80,52 +105,10 @@ def get_table_from_supabase(url, key, table_name, batch_size=1000, delay=0.2, fi
             query = query.eq("is_recipient", True)
 
         #order by primary key
-        if table_name == "recipients":
-            query = query.order("recipient_id")
-        elif table_name == "funders":
-            query = query.order("registered_num")
-        elif table_name == "grants":
-            query = query.order("grant_id")
-        elif table_name == "evaluation_pairs":
-            query = query.order("id")
-        elif table_name == "beneficiaries":
-            query = query.order("ben_id")
-        elif table_name == "causes":
-            query = query.order("cause_id")
-        elif table_name == "areas":
-            query = query.order("area_id")
-        elif table_name == "financials":
-            query = query.order("financials_id")
-        elif table_name == "list_entries":
-            query = query.order("list_id")
-        elif table_name == "funder_causes":
-            query = query.order("funder_causes_id")
-        elif table_name == "funder_areas":
-            query = query.order("funder_areas_id")
-        elif table_name == "funder_beneficiaries":
-            query = query.order("funder_ben_id")
-        elif table_name == "funder_grants":
-            query = query.order("funder_grants_id")
-        elif table_name == "funder_financials":
-            query = query.order("funder_fin_id")
-        elif table_name == "funder_list":
-            query = query.order("funder_list_id")
-        elif table_name == "recipient_grants":
-            query = query.order("recipient_grants_id")
-        elif table_name == "recipient_areas":
-            query = query.order("recipient_areas_id")
-        elif table_name == "recipient_beneficiaries":
-            query = query.order("recipient_ben_id")
-        elif table_name == "recipient_causes":
-            query = query.order("recipient_cause_id")
-        elif table_name == "embedding_pairs":
-            query = query.order("id")
-        elif table_name == "logic_pairs":
-            query = query.order("id")
-        elif table_name == "area_hierarchy":
-            query = query.order("parent_area_id")
-        else:
-            raise ValueError(f"Unknown table '{table_name}' - please add ordering column to get_table_from_supabase()")
+        if table_name not in PRIMARY_KEYS:
+            raise ValueError(f"Unknown table '{table_name}' - please add ordering column to PRIMARY_KEYS")
+
+        query = query.order(PRIMARY_KEYS[table_name])
 
         #batch imports
         try:
