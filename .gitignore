@@ -54,3 +54,6 @@ __pycache__/
 #notebook for testing functions
 eda_testing.ipynb
 
+#spreadsheet for planning scoring logic
+logic_workings.xlsx
+
