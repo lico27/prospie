@@ -127,10 +127,10 @@ def get_descendants(area_id, df):
     
     return descendants
 
-def check_if_parent(parent_id, child_id):
+def check_if_parent(parent_id, child_id, hierarchies_df):
     """
     Checks if an area is a parent of another.
     """
-    descendants = get_descendants(parent_id)
+    descendants = get_descendants(parent_id, hierarchies_df)
     return child_id in descendants
  
