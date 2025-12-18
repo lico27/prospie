@@ -1,7 +1,7 @@
 import CheckboxGroup from '../CheckboxGroup'
 import { beneficiaryOptions } from '../../data/constants'
 
-function Step2Beneficiaries({ selectedBeneficiaries, onChange }) {
+function Step3Beneficiaries({ selectedBeneficiaries, onChange }) {
   return (
     <div className="form-group">
       <label>Who does your project benefit?</label>
@@ -14,4 +14,4 @@ function Step2Beneficiaries({ selectedBeneficiaries, onChange }) {
   )
 }
 
-export default Step2Beneficiaries
+export default Step3Beneficiaries

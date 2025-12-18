@@ -4,13 +4,15 @@ import ProgressIndicator from "../ProgressIndicator"
 import FormNavigation from "../FormNavigation"
 import ResultDisplay from "../ResultDisplay"
 import Step1CharityNumber from "./Step1CharityNumber"
-import Step2Beneficiaries from "./Step2Beneficiaries"
+import Step2ConfirmDetails from "./Step2ConfirmDetails"
+import Step3Beneficiaries from "./Step3Beneficiaries"
 import Step3Causes from "./Step3Causes"
 import Step4FunderNumber from "./Step4FunderNumber"
 
 function MultiStepForm({ resetTrigger }) {
   const [currentStep, setCurrentStep] = useState(1)
   const [charityNumber, setCharityNumber] = useState("")
+  const [charityData, setCharityData] = useState(null)
   const [selectedBeneficiaries, setSelectedBeneficiaries] = useState([])
   const [selectedCauses, setSelectedCauses] = useState([])
   const [funderNumber, setFunderNumber] = useState("")
@@ -51,7 +53,7 @@ function MultiStepForm({ resetTrigger }) {
   }
 
   const handleNext = async () => {
-    if (currentStep < 4) {
+    if (currentStep < 5) {
       if (currentStep === 1) {
         await validateCharityNumber()
       } else {
@@ -78,15 +80,53 @@ function MultiStepForm({ resetTrigger }) {
     setError(null)
 
     try {
-      const { data, error } = await supabase
+      const { data: recipient, error } = await supabase
         .from("recipients")
-        .select("recipient_id")
+        .select("*")
         .eq("recipient_id", charityNumber)
         .single()
 
       if (error) throw error
 
-      if (data) {
+      if (recipient) {
+        const [areaLinks, causeLinks, benLinks] = await Promise.all([
+          supabase.from("recipient_areas").select("area_id").eq("recipient_id", charityNumber),
+          supabase.from("recipient_causes").select("cause_id").eq("recipient_id", charityNumber),
+          supabase.from("recipient_beneficiaries").select("ben_id").eq("recipient_id", charityNumber)
+        ])
+
+        const areaIds = areaLinks.data?.map(a => a.area_id) || []
+        const causeIds = causeLinks.data?.map(c => c.cause_id) || []
+        const benIds = benLinks.data?.map(b => b.ben_id) || []
+
+        const [areas, causes, beneficiaries] = await Promise.all([
+          areaIds.length > 0
+            ? supabase.from("areas").select("area_name, area_level").in("area_id", areaIds)
+            : Promise.resolve({ data: [] }),
+          causeIds.length > 0
+            ? supabase.from("causes").select("cause_name").in("cause_id", causeIds)
+            : Promise.resolve({ data: [] }),
+          benIds.length > 0
+            ? supabase.from("beneficiaries").select("ben_name").in("ben_id", benIds)
+            : Promise.resolve({ data: [] })
+        ])
+
+        const enrichedData = {
+          ...recipient,
+          areas: areas.data || [],
+          causes: causes.data || [],
+          beneficiaries: beneficiaries.data || []
+        }
+
+        // Pre-populate selected beneficiaries from database
+        const dbBeneficiaries = beneficiaries.data?.map(b => b.ben_name) || []
+        setSelectedBeneficiaries(dbBeneficiaries)
+
+        // Pre-populate selected causes from database
+        const dbCauses = causes.data?.map(c => c.cause_name) || []
+        setSelectedCauses(dbCauses)
+
+        setCharityData(enrichedData)
         setCurrentStep(currentStep + 1)
         setError(null)
       }
@@ -113,6 +153,7 @@ function MultiStepForm({ resetTrigger }) {
   const handleReset = () => {
     setCurrentStep(1)
     setCharityNumber("")
+    setCharityData(null)
     setSelectedBeneficiaries([])
     setSelectedCauses([])
     setFunderNumber("")
@@ -127,7 +168,7 @@ function MultiStepForm({ resetTrigger }) {
 
   const handleFormSubmit = (e) => {
     e.preventDefault()
-    if (currentStep === 4) {
+    if (currentStep === 5) {
       handleSubmit(e)
     } else {
       handleNext()
@@ -139,7 +180,7 @@ function MultiStepForm({ resetTrigger }) {
       <div className="app-container">
         <h2 className="app-title">Get your prospie score</h2>
 
-        <ProgressIndicator currentStep={currentStep} />
+        <ProgressIndicator currentStep={currentStep} totalSteps={5} />
 
         <div className="app-form-container">
           <form onSubmit={handleFormSubmit}>
@@ -148,31 +189,42 @@ function MultiStepForm({ resetTrigger }) {
             )}
 
             {currentStep === 2 && (
-              <Step2Beneficiaries
+              <Step2ConfirmDetails
+                charityData={charityData}
+                onBack={handleBack}
+                onUseThis={() => setCurrentStep(5)}
+                onEdit={() => setCurrentStep(3)}
+              />
+            )}
+
+            {currentStep === 3 && (
+              <Step3Beneficiaries
                 selectedBeneficiaries={selectedBeneficiaries}
                 onChange={setSelectedBeneficiaries}
               />
             )}
 
-            {currentStep === 3 && (
+            {currentStep === 4 && (
               <Step3Causes
                 selectedCauses={selectedCauses}
                 onChange={setSelectedCauses}
               />
             )}
 
-            {currentStep === 4 && (
+            {currentStep === 5 && (
               <Step4FunderNumber funderNumber={funderNumber} onChange={setFunderNumber} />
             )}
 
-            <FormNavigation
-              currentStep={currentStep}
-              totalSteps={4}
-              onBack={handleBack}
-              onNext={handleNext}
-              onSubmit={handleSubmit}
-              loading={loading}
-            />
+            {currentStep !== 2 && (
+              <FormNavigation
+                currentStep={currentStep}
+                totalSteps={5}
+                onBack={handleBack}
+                onNext={handleNext}
+                onSubmit={handleSubmit}
+                loading={loading}
+              />
+            )}
           </form>
 
           {funderName && (
