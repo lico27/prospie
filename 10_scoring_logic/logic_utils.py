@@ -1,5 +1,7 @@
 import re
 import pandas as pd
+import json
+from sentence_transformers import SentenceTransformer, util
 
 def extract_classifications(row, section_cols, ukcat_df, areas_df):
     """
@@ -134,3 +136,18 @@ def check_if_parent(parent_id, child_id, hierarchies_df):
     descendants = get_descendants(parent_id, hierarchies_df)
     return child_id in descendants
  
+def calculate_similarity_score(funder_embedding, user_embedding):
+    """
+    Calculates semantic similarity between user and funder using pre-computed embeddings.
+    """
+    
+    #parse json   
+    if isinstance(funder_embedding, str):
+        funder_embedding = json.loads(funder_embedding)
+    if isinstance(user_embedding, str):
+        user_embedding = json.loads(user_embedding)
+    
+    #calculate cosine similarity
+    score = util.cos_sim(funder_embedding, user_embedding).item()
+    
+    return score
