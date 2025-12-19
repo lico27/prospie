@@ -11,7 +11,7 @@ prospie is an AI tool to support trusts fundraisers in the third sector. prospie
 5. Gets information from [The List](https://the-list.uk/) and adds to database
 6. EDA - explores, cleans and visualises the data   
     6.1. Stores checkpoints locally     
-    6.2.Reprocesses PDFs to extract accounts sections using Claude LLM instead of regex
+    6.2. Reprocesses PDFs to extract accounts sections using Claude LLM instead of regex
 7. Explores the best model and approach for the embeddings    
     7.1. Stores checkpoints locally     
     7.2. Compares embedding models to select the most suitable for the project      
@@ -28,11 +28,27 @@ prospie is an AI tool to support trusts fundraisers in the third sector. prospie
 
 ### Build the Database
 
+The database is built in stages by running Python scripts in folders 01-05. Each stage processes and uploads data to your Supabase instance.
+
+#### Prerequisites
+
+- Supabase project with appropriate tables configured <font color="red"> (LINK TO SCHEMA GOES HERE)</font>
+- API keys stored in a `.env` file in the project root:
+- `SUPABASE_URL` - Your Supabase project URL
+- `SUPABASE_KEY` - Your Supabase service role key
+- `ANTHROPIC_KEY` - Claude API key (for PDF processing in step 04)
+
+#### Steps
+
 TBC
+
+----
 
 ### Use the App
 
 TBC
+
+----
 
 ### Evaluate the App
 
