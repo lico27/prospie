@@ -1,4 +1,4 @@
-import Footer from './Footer'
+import Footer from "./Footer"
 
 function HomePage({ onGetStarted }) {
   return (
@@ -12,17 +12,6 @@ function HomePage({ onGetStarted }) {
       </div>
       <div className="showcase-section">
         <div className="divider-line"></div>
-        <div className="showcase-container">
-          <div className="showcase-content">
-            <div className="placeholder-icon">
-              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="3" width="18" height="18" rx="2" />
-                <path d="M9 3v18M15 3v18M3 9h18M3 15h18" />
-              </svg>
-            </div>
-            <p className="placeholder-text">App coming soon!</p>
-          </div>
-        </div>
       </div>
       <Footer />
     </>

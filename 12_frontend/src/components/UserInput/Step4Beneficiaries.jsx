@@ -1,5 +1,5 @@
-import CheckboxGroup from '../CheckboxGroup'
-import { beneficiaryOptions } from '../../data/constants'
+import CheckboxGroup from "../CheckboxGroup"
+import { beneficiaryOptions } from "../../data/constants"
 
 function Step3Beneficiaries({ selectedBeneficiaries, onChange }) {
   return (

@@ -1,5 +1,5 @@
-import CheckboxGroup from '../CheckboxGroup'
-import { causeOptions } from '../../data/constants'
+import CheckboxGroup from "../CheckboxGroup"
+import { causeOptions } from "../../data/constants"
 
 function Step3Causes({ selectedCauses, onChange }) {
   return (

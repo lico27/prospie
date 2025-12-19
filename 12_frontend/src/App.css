@@ -28,7 +28,7 @@
 }
 
 .hero-section::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -41,7 +41,7 @@
 }
 
 .hero-section::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 20%;
   right: 10%;
@@ -153,7 +153,7 @@
 }
 
 .divider-line::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
@@ -173,43 +173,7 @@
   }
 }
 
-.showcase-container {
-  max-width: 1200px;
-  width: 100%;
-}
-
-.showcase-content {
-  padding: 2rem 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
-  position: relative;
-}
-
-.placeholder-icon {
-  color: #b8a8d4;
-  opacity: 0.4;
-  transition: opacity 0.3s ease;
-}
-
-.showcase-content:hover .placeholder-icon {
-  opacity: 0.6;
-}
-
-.placeholder-text {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #c9c0de;
-  margin: 0;
-  opacity: 0.7;
-}
-
 @media (min-width: 640px) {
-  .showcase-section {
-    padding: 4rem 3rem;
-  }
 
   .divider-line {
     margin-bottom: 4rem;
@@ -219,23 +183,14 @@
     padding: 3rem 2rem;
   }
 
-  .placeholder-text {
-    font-size: 1.75rem;
-  }
 }
 
 @media (min-width: 1024px) {
-  .showcase-section {
-    padding: 5rem 4rem;
-  }
 
   .divider-line {
     margin-bottom: 5rem;
   }
 
-  .showcase-content {
-    padding: 4rem 3rem;
-  }
 }
 
 /* App View Styles */

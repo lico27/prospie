@@ -39,20 +39,9 @@ function Step2ConfirmDetails({ charityData, onBack, onUseThis, onEdit }) {
           </div>
         )}
 
-        {charityData.causes && charityData.causes.length > 0 && (
-          <div className="entity-section">
-            <h4>Causes</h4>
-            <div className="tag-list">
-              {charityData.causes.map((cause, idx) => (
-                <span key={idx} className="tag">{cause.cause_name}</span>
-              ))}
-            </div>
-          </div>
-        )}
-
         {charityData.areas && charityData.areas.length > 0 && (
           <div className="entity-section">
-            <h4>Geographic Areas</h4>
+            <h4>Areas</h4>
             <div className="tag-list">
               {charityData.areas.map((area, idx) => (
                 <span key={idx} className="tag">
@@ -69,6 +58,17 @@ function Step2ConfirmDetails({ charityData, onBack, onUseThis, onEdit }) {
             <div className="tag-list">
               {charityData.beneficiaries.map((ben, idx) => (
                 <span key={idx} className="tag">{ben.ben_name}</span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {charityData.causes && charityData.causes.length > 0 && (
+          <div className="entity-section">
+            <h4>Causes</h4>
+            <div className="tag-list">
+              {charityData.causes.map((cause, idx) => (
+                <span key={idx} className="tag">{cause.cause_name}</span>
               ))}
             </div>
           </div>

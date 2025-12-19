@@ -1,5 +1,3 @@
-import { toTitleCase } from '../utils/helpers'
-
 function CheckboxGroup({ options, selectedValues, onChange }) {
   const handleCheckboxChange = (option, isChecked) => {
     if (isChecked) {
@@ -19,7 +17,7 @@ function CheckboxGroup({ options, selectedValues, onChange }) {
             checked={selectedValues.includes(option)}
             onChange={(e) => handleCheckboxChange(option, e.target.checked)}
           />
-          <span className="checkbox-label">{toTitleCase(option)}</span>
+          <span className="checkbox-label">{option}</span>
         </label>
       ))}
     </div>

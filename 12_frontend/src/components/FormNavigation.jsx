@@ -11,7 +11,7 @@ function FormNavigation({ currentStep, totalSteps, onBack, onNext, onSubmit, loa
       )}
       {isLastStep ? (
         <button type="submit" className="nav-button submit-button" disabled={loading}>
-          {loading ? 'Searching...' : 'Submit'}
+          {loading ? "Searching..." : "Submit"}
         </button>
       ) : (
         <button type="submit" className="nav-button next-button">

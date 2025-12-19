@@ -2,14 +2,14 @@ import { useState, useEffect } from "react"
 import { supabase } from "../../supabaseClient"
 import ProgressIndicator from "../ProgressIndicator"
 import FormNavigation from "../FormNavigation"
-import ResultDisplay from "../ResultDisplay"
 import Step1CharityNumber from "./Step1CharityNumber"
 import Step2ConfirmDetails from "./Step2ConfirmDetails"
-import Step3Beneficiaries from "./Step3Beneficiaries"
-import Step3Causes from "./Step3Causes"
-import Step4FunderNumber from "./Step4FunderNumber"
+// import Step3Areas from "./Step3Areas"
+import Step4Beneficiaries from "./Step4Beneficiaries"
+import Step5Causes from "./Step5Causes"
+import StepXFunderNumber from "./StepXFunderNumber"
 
-function MultiStepForm({ resetTrigger }) {
+function UserInput({ resetTrigger }) {
   const [currentStep, setCurrentStep] = useState(1)
   const [charityNumber, setCharityNumber] = useState("")
   const [charityData, setCharityData] = useState(null)
@@ -91,31 +91,31 @@ function MultiStepForm({ resetTrigger }) {
       if (recipient) {
         const [areaLinks, causeLinks, benLinks] = await Promise.all([
           supabase.from("recipient_areas").select("area_id").eq("recipient_id", charityNumber),
-          supabase.from("recipient_causes").select("cause_id").eq("recipient_id", charityNumber),
-          supabase.from("recipient_beneficiaries").select("ben_id").eq("recipient_id", charityNumber)
+          supabase.from("recipient_beneficiaries").select("ben_id").eq("recipient_id", charityNumber),
+          supabase.from("recipient_causes").select("cause_id").eq("recipient_id", charityNumber)
         ])
 
         const areaIds = areaLinks.data?.map(a => a.area_id) || []
-        const causeIds = causeLinks.data?.map(c => c.cause_id) || []
         const benIds = benLinks.data?.map(b => b.ben_id) || []
-
+        const causeIds = causeLinks.data?.map(c => c.cause_id) || []
+        
         const [areas, causes, beneficiaries] = await Promise.all([
           areaIds.length > 0
             ? supabase.from("areas").select("area_name, area_level").in("area_id", areaIds)
             : Promise.resolve({ data: [] }),
+          benIds.length > 0
+            ? supabase.from("beneficiaries").select("ben_name").in("ben_id", benIds)
+            : Promise.resolve({ data: [] }),
           causeIds.length > 0
             ? supabase.from("causes").select("cause_name").in("cause_id", causeIds)
             : Promise.resolve({ data: [] }),
-          benIds.length > 0
-            ? supabase.from("beneficiaries").select("ben_name").in("ben_id", benIds)
-            : Promise.resolve({ data: [] })
         ])
 
         const enrichedData = {
           ...recipient,
           areas: areas.data || [],
-          causes: causes.data || [],
-          beneficiaries: beneficiaries.data || []
+          beneficiaries: beneficiaries.data || [],
+          causes: causes.data || []
         }
 
         // Pre-populate selected beneficiaries from database
@@ -198,21 +198,21 @@ function MultiStepForm({ resetTrigger }) {
             )}
 
             {currentStep === 3 && (
-              <Step3Beneficiaries
+              <Step4Beneficiaries
                 selectedBeneficiaries={selectedBeneficiaries}
                 onChange={setSelectedBeneficiaries}
               />
             )}
 
             {currentStep === 4 && (
-              <Step3Causes
+              <Step5Causes
                 selectedCauses={selectedCauses}
                 onChange={setSelectedCauses}
               />
             )}
 
             {currentStep === 5 && (
-              <Step4FunderNumber funderNumber={funderNumber} onChange={setFunderNumber} />
+              <StepXFunderNumber funderNumber={funderNumber} onChange={setFunderNumber} />
             )}
 
             {currentStep !== 2 && (
@@ -246,4 +246,4 @@ function MultiStepForm({ resetTrigger }) {
   )
 }
 
-export default MultiStepForm
+export default UserInput

@@ -21,8 +21,8 @@ prospie is an AI tool to support trusts fundraisers in the third sector. prospie
 9. An evaluation form to gather professional fundraisers' opinions on the alignment of a sample of funder-recipient pairs, to assess the performance of the app
 10. Develops the logic behind the alignment score       
     10.1. Stores checkpoints locally    
-- A frontend to interact with the app 
-- A backend to deliver the calculated alignment score of a user's charity and their chosen funder
+11. A backend to deliver the calculated alignment score of a user's charity and their chosen funder  
+12. A frontend to interact with the app 
 
 ## How to...
 
