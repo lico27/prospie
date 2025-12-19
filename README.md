@@ -32,7 +32,7 @@ The database is built in stages by running Python scripts in folders 01-05. Each
 
 #### Prerequisites
 
-- Supabase project with appropriate tables configured <font color="red"> (LINK TO SCHEMA GOES HERE)</font>
+- Supabase project with appropriate tables configured [per the schema](https://github.com/lico27/prospie/blob/64276f68aa005a70749cb7eb20427adc115679bc/schema.sql/)
 - API keys stored in a `.env` file in the project root:
 - `SUPABASE_URL` - Your Supabase project URL
 - `SUPABASE_KEY` - Your Supabase service role key
