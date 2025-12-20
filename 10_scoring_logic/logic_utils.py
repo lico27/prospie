@@ -150,4 +150,4 @@ def calculate_similarity_score(funder_embedding, user_embedding):
     #calculate cosine similarity
     score = util.cos_sim(funder_embedding, user_embedding).item()
     
-    return score
+    return max(0.0, score)

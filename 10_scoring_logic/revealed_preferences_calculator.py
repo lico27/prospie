@@ -1,8 +1,4 @@
-
-
-
-
-
+from logic_utils import calculate_similarity_score
 
 def check_name_rp(recipients_embedding_dict, user_embedding, user_name):
     """
@@ -32,7 +28,7 @@ def check_name_rp(recipients_embedding_dict, user_embedding, user_name):
     for match in top_10:
         reasoning.append(f"{match['recipient_name']}: {match['similarity']:.3f}")
 
-    return score, reasoning
+    return max(0.0, score), reasoning
 
 def check_grants_rp(grants_embedding_dict, user_embedding, user_name):
     """
@@ -60,9 +56,9 @@ def check_grants_rp(grants_embedding_dict, user_embedding, user_name):
     #build reasoning from top 10 matches
     reasoning = []
     for match in top_10:
-        reasoning.append(f"{match['grant_info']}: {match['similarity']:.3f}")
+        reasoning.append(f"{match['grant_recipient_name']}: {match['similarity']:.3f}")
 
-    return score, reasoning
+    return max(0.0, score), reasoning
 
 def check_recipients_rp(recipients_embedding_dict, user_embedding, user_name):
     """
@@ -92,4 +88,5 @@ def check_recipients_rp(recipients_embedding_dict, user_embedding, user_name):
     for match in top_10:
         reasoning.append(f"{match['grant_recipient_name']}: {match['similarity']:.3f}")
 
-    return score, reasoning
+    return max(0.0, score), reasoning
+
