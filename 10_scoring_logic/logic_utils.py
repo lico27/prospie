@@ -170,7 +170,7 @@ def format_score_test(idx, row, result):
 
     #design html
     html = f"""
-    <div style="background: #1e1e1e; border-left: 4px solid #007acc; padding: 15px; margin: 10px 0; font-family: sans-serif; color: #d4d4d4;">
+    <div style="background: #1e1e1e; padding: 15px; margin: 10px 0; font-family: sans-serif; color: #d4d4d4;">
         <div style="font-size: 16px; font-weight: bold; margin-bottom: 10px; color: #4ec9b0;">
             #{idx + 1}: {row['name']} & {row['user_name']}
         </div>
