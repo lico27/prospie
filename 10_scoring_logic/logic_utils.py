@@ -2,6 +2,7 @@ import re
 import pandas as pd
 import json
 from sentence_transformers import SentenceTransformer, util
+from IPython.display import display, HTML
 
 def extract_classifications(row, section_cols, ukcat_df, areas_df):
     """
@@ -151,3 +152,50 @@ def calculate_similarity_score(funder_embedding, user_embedding):
     score = util.cos_sim(funder_embedding, user_embedding).item()
     
     return max(0.0, score)
+
+def format_score_test(idx, row, result):
+    """
+    Makes simple cards to display results of test.
+    """
+    #unpack score elements
+    (is_sbf, is_nua, is_on_list, list_reasoning,
+    existing_relationship, num_grants, relationship, areas_score,
+    areas_reasoning, beneficiaries_score, beneficiaries_reasoning,
+    causes_score, causes_reasoning, text_similarity_score,
+    keyword_similarity_score, keyword_strong_matches, keyword_reasoning, keyword_gets_bonus,
+    name_score_rp, name_rp_reasoning, grants_rp_score, grants_rp_reasoning,
+    recipients_rp_score, recipients_rp_reasoning, sbf_penalty, keywords_bonus,
+    time_lapsed, relationship_bonus, last_grant_year, areas_rp_bonus, areas_rp_reasoning,
+    keywords_rp_bonus, keywords_rp_reasoning, lv_penalty) = result
+
+    #design html
+    html = f"""
+    <div style="background: #1e1e1e; border-left: 4px solid #007acc; padding: 15px; margin: 10px 0; font-family: sans-serif; color: #d4d4d4;">
+        <div style="font-size: 16px; font-weight: bold; margin-bottom: 10px; color: #4ec9b0;">
+            #{idx + 1}: {row['name']} & {row['user_name']}
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 13px;">
+            <div><span style="color: #808080;">SBF:</span> {'❌' if is_sbf else '✅'}</div>
+            <div><span style="color: #808080;">NUA:</span> {'❌' if is_nua else '✅'}</div>
+            <div><span style="color: #808080;">List:</span> {'❌' if is_on_list else '✅'}</div>
+            <div><span style="color: #808080;">Relationship:</span> {num_grants} grants</div>
+            <div><span style="color: #808080;">Areas:</span> {areas_score:.2f}</div>
+            <div><span style="color: #808080;">Beneficiaries:</span> {beneficiaries_score:.2f}</div>
+            <div><span style="color: #808080;">Causes:</span> {causes_score:.2f}</div>
+            <div><span style="color: #808080;">Text:</span> {text_similarity_score:.2f}</div>
+            <div><span style="color: #808080;">Keywords:</span> {keyword_similarity_score:.2f} {'🎁' if keyword_gets_bonus else ''}</div>
+            <div><span style="color: #808080;">Name (RP):</span> {name_score_rp:.2f}</div>
+            <div><span style="color: #808080;">Grants (RP):</span> {grants_rp_score:.2f}</div>
+            <div><span style="color: #808080;">Recipients (RP):</span> {recipients_rp_score:.2f}</div>
+        </div>
+        
+        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #333; font-size: 12px; color: #ce9178;">
+            <span style="color: #808080;">Multipliers:</span>
+            SBF: {sbf_penalty:.2f} | KW: {keywords_bonus:.2f} | Rel: {relationship_bonus:.2f} | 
+            Areas: {areas_rp_bonus:.2f} | KW(RP): {keywords_rp_bonus:.2f} | LV: {lv_penalty:.2f}
+        </div>
+    </div>
+    """
+
+    display(HTML(html))
