@@ -404,7 +404,7 @@ def calculate_areas_bonus_rp(funder_grants_df, user_areas, areas_df, hierarchies
     """
 
     if funder_grants_df.empty:
-        return 0.0, ["No grants history available"]
+        return 1.0, ["No grants history available"]
 
     #get unique areas from recipients
     all_areas = []
@@ -413,7 +413,7 @@ def calculate_areas_bonus_rp(funder_grants_df, user_areas, areas_df, hierarchies
             all_areas.extend(areas_list)
 
     if len(all_areas) == 0:
-        return 0.0, ["No area data available"]
+        return 1.0, ["No area data available"]
 
     recipient_areas = list(set(all_areas))
 

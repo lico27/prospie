@@ -172,7 +172,7 @@ def format_score_test(idx, row, result):
     html = f"""
     <div style="background: #1e1e1e; padding: 15px; margin: 10px 0; font-family: sans-serif; color: #d4d4d4;">
         <div style="font-size: 16px; font-weight: bold; margin-bottom: 10px; color: #4ec9b0;">
-            #{idx + 1}: {row['name']} & {row['user_name']}
+            #{idx}: {row['name']} & {row['user_name']}
         </div>
         
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 13px;">
