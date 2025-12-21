@@ -99,7 +99,7 @@ function UserInput({ resetTrigger }) {
         const benIds = benLinks.data?.map(b => b.ben_id) || []
         const causeIds = causeLinks.data?.map(c => c.cause_id) || []
         
-        const [areas, causes, beneficiaries] = await Promise.all([
+        const [areas, beneficiaries, causes] = await Promise.all([
           areaIds.length > 0
             ? supabase.from("areas").select("area_name, area_level").in("area_id", areaIds)
             : Promise.resolve({ data: [] }),
