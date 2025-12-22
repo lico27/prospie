@@ -1,11 +1,11 @@
-name: Deploy x_evaluation to GitHub Pages
+name: Deploy 09_evaluation_app to GitHub Pages
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'x_evaluation/**'
+      - '09_evaluation_app/**'
   workflow_dispatch:
 
 permissions:
@@ -29,15 +29,15 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-          cache-dependency-path: x_evaluation/package-lock.json
+          cache-dependency-path: 09_evaluation_app/package-lock.json
 
       - name: Install dependencies
         run: npm ci
-        working-directory: x_evaluation
+        working-directory: 09_evaluation_app
 
       - name: Build
         run: npm run build
-        working-directory: x_evaluation
+        working-directory: 09_evaluation_app
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_KEY: ${{ secrets.VITE_SUPABASE_KEY }}
@@ -45,7 +45,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: x_evaluation/dist
+          path: 09_evaluation_app/dist
 
   deploy:
     environment:
