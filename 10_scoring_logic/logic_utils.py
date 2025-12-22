@@ -153,7 +153,7 @@ def calculate_similarity_score(funder_embedding, user_embedding):
     
     return max(0.0, score)
 
-def format_score_test(idx, row, result):
+def format_test_1(idx, row, result):
     """
     Makes simple cards to display results of test.
     """
@@ -195,6 +195,27 @@ def format_score_test(idx, row, result):
             SBF: {sbf_penalty:.2f} | KW: {keywords_bonus:.2f} | Rel: {relationship_bonus:.2f} | 
             Areas: {areas_rp_bonus:.2f} | KW(RP): {keywords_rp_bonus:.2f} | LV: {lv_penalty:.2f}
         </div>
+    </div>
+    """
+
+    display(HTML(html))
+
+def format_tests(idx, row, result):
+    """
+    Makes simple cards to display results of test.
+    """
+
+    #design html
+    html = f"""
+    <div style="background: #1e1e1e; padding: 5px; margin: 5px 0; font-family: sans-serif; color: #d4d4d4;">
+        <div style="font-size: 16px; font-weight: bold; margin-bottom: 5px; color: #4ec9b0;">
+            #{idx + 1}: {row['name']} & {row['user_name']}
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; font-size: 13px;">
+            <div><span style="color: #808080;">prospie score:</span> {result * 100:.2f}%</div>
+        </div>
+
     </div>
     """
 
