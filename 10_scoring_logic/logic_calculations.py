@@ -343,21 +343,21 @@ def calculate_keywords_bonus(strong_matches, ukcat_df):
 
     #weight by specificity of ukcat level
     level_weights = {
-        1: 0.3, 
-        2: 0.7, 
+        1: 0.4, 
+        2: 0.8, 
         3: 1.0
     }
     
     weighted_scores = []
     for keyword, score in strong_matches.items():
         #find keyword in ukcat_df
-        match = ukcat_df[ukcat_df['tag'].str.upper() == keyword.upper()]
+        match = ukcat_df[ukcat_df["tag"].str.upper() == keyword.upper()]
         
         if not match.empty:
-            level = match.iloc[0]['level']
+            level = match.iloc[0]["level"]
             weighted_score = score * level_weights.get(level, 1.0)
         else:
-            weighted_score = score * 0.3
+            weighted_score = score * 0.4
         
         weighted_scores.append(weighted_score)
     

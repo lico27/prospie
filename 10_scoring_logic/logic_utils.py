@@ -166,7 +166,7 @@ def format_test_1(idx, row, result):
     name_score_rp, name_rp_reasoning, grants_rp_score, grants_rp_reasoning,
     recipients_rp_score, recipients_rp_reasoning, sbf_penalty, keywords_bonus,
     time_lapsed, relationship_bonus, last_grant_year, areas_rp_bonus, areas_rp_reasoning,
-    keywords_rp_bonus, keywords_rp_reasoning, lv_penalty) = result
+    keywords_rp_bonus, keywords_rp_reasoning, lv_penalty, has_grants_data) = result
 
     #design html
     html = f"""
