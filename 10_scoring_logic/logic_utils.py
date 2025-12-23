@@ -161,11 +161,11 @@ def format_test_1(idx, row, result):
     (is_sbf, is_nua, is_on_list, list_reasoning,
     existing_relationship, num_grants, relationship, areas_score,
     areas_reasoning, beneficiaries_score, beneficiaries_reasoning,
-    causes_score, causes_reasoning, text_similarity_score,
+    causes_score, causes_reasoning, has_gcp, text_similarity_score,
     keyword_similarity_score, keyword_strong_matches, keyword_reasoning, keyword_gets_bonus,
     name_score_rp, name_rp_reasoning, grants_rp_score, grants_rp_reasoning,
     recipients_rp_score, recipients_rp_reasoning, sbf_penalty, nua_penalty, keywords_bonus,
-    time_lapsed, relationship_bonus, last_grant_year, areas_rp_bonus, areas_rp_reasoning,
+    time_lapsed, relationship_bonus, last_grant_year, gcp_bonus, areas_rp_bonus, areas_rp_reasoning,
     keywords_rp_bonus, keywords_rp_reasoning, lv_penalty, has_grants_data) = result
 
     #design html
@@ -192,7 +192,7 @@ def format_test_1(idx, row, result):
         
         <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #333; font-size: 12px; color: #ce9178;">
             <span style="color: #808080;">Multipliers:</span>
-            SBF: {sbf_penalty:.2f} | NUA: {nua_penalty:.2f} | KW: {keywords_bonus:.2f} | Rel: {relationship_bonus:.2f} | 
+            SBF: {sbf_penalty:.2f} | NUA: {nua_penalty:.2f} | KW: {keywords_bonus:.2f} | Rel: {relationship_bonus:.2f} | GCP: {gcp_bonus:.2f} | 
             Areas: {areas_rp_bonus:.2f} | KW(RP): {keywords_rp_bonus:.2f} | LV: {lv_penalty:.2f}
         </div>
     </div>

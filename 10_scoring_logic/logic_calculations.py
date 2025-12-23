@@ -150,9 +150,6 @@ def check_causes(funder_list, user_list):
         if user_cause in funder_specific:
             scores.append(1.0)
             reasoning.append(f"Exact match: {user_cause}")
-        elif has_gcp:
-            scores.append(0.6)
-            reasoning.append(f"Weak match: user states '{user_cause}' and funder supports general charitable purposes")
         else:
             scores.append(0.0)
             reasoning.append(f"No match: {user_cause}")
@@ -163,7 +160,7 @@ def check_causes(funder_list, user_list):
     else:
         score = 0.0
     
-    return max(0.0, score), reasoning
+    return max(0.0, score), reasoning, has_gcp
 
 def check_keywords(funder_keywords, user_keywords, model):
     """
