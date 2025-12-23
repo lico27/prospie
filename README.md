@@ -26,6 +26,7 @@ prospie is an AI tool to support trusts fundraisers in the third sector. prospie
 11. A backend to deliver the calculated alignment score of a user's charity and their chosen funder  
 12. A frontend to interact with the app     
 13. Evaluates the performance of the scoring logic
+    13.1. Stores checkpoints locally        
 
 ## How to...
 
@@ -37,8 +38,8 @@ The database is built in stages by running Python scripts in folders 01-05. Each
 
 - Supabase project with appropriate tables configured [per the schema](https://github.com/lico27/prospie/blob/64276f68aa005a70749cb7eb20427adc115679bc/schema.sql/)
 - API keys stored in a `.env` file in the project root:
-- `SUPABASE_URL` - Your Supabase project URL
-- `SUPABASE_KEY` - Your Supabase service role key
+- `SUPABASE_URL` - your Supabase project URL
+- `SUPABASE_KEY` - your Supabase service role key
 - `ANTHROPIC_KEY` - Claude API key (for PDF processing in step 04)
 
 #### Steps
@@ -50,9 +51,3 @@ TBC
 ### Use the App
 
 TBC
-
-----
-
-### Evaluate the App
-
-Visit [https://lico27.github.io/prospie/](https://lico27.github.io/prospie/). 
