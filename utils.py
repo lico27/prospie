@@ -88,7 +88,8 @@ def get_table_from_supabase(url, key, table_name, batch_size=1000, delay=0.2, fi
         "recipient_causes": "recipient_cause_id",
         "embedding_pairs": "id",
         "logic_pairs": "id",
-        "area_hierarchy": "parent_area_id"
+        "area_hierarchy": "parent_area_id",
+        "evaluation_responses": "id"
     }
 
     #create client instance
