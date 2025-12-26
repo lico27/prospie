@@ -4,7 +4,7 @@ import ProgressIndicator from "../ProgressIndicator"
 import FormNavigation from "../FormNavigation"
 import Step1CharityNumber from "./Step1CharityNumber"
 import Step2ConfirmDetails from "./Step2ConfirmDetails"
-// import Step3Areas from "./Step3Areas"
+import Step3Areas from "./Step3Areas"
 import Step4Beneficiaries from "./Step4Beneficiaries"
 import Step5Causes from "./Step5Causes"
 import StepXFunderNumber from "./StepXFunderNumber"
@@ -13,6 +13,7 @@ function UserInput({ resetTrigger }) {
   const [currentStep, setCurrentStep] = useState(1)
   const [charityNumber, setCharityNumber] = useState("")
   const [charityData, setCharityData] = useState(null)
+  const [selectedAreas, setSelectedAreas] = useState([])
   const [selectedBeneficiaries, setSelectedBeneficiaries] = useState([])
   const [selectedCauses, setSelectedCauses] = useState([])
   const [funderNumber, setFunderNumber] = useState("")
@@ -53,7 +54,7 @@ function UserInput({ resetTrigger }) {
   }
 
   const handleNext = async () => {
-    if (currentStep < 5) {
+    if (currentStep < 6) {
       if (currentStep === 1) {
         await validateCharityNumber()
       } else {
@@ -89,7 +90,7 @@ function UserInput({ resetTrigger }) {
       if (error) throw error
 
       if (recipient) {
-        const [areaLinks, causeLinks, benLinks] = await Promise.all([
+        const [areaLinks, benLinks, causeLinks] = await Promise.all([
           supabase.from("recipient_areas").select("area_id").eq("recipient_id", charityNumber),
           supabase.from("recipient_beneficiaries").select("ben_id").eq("recipient_id", charityNumber),
           supabase.from("recipient_causes").select("cause_id").eq("recipient_id", charityNumber)
@@ -118,11 +119,15 @@ function UserInput({ resetTrigger }) {
           causes: causes.data || []
         }
 
-        // Pre-populate selected beneficiaries from database
+        //pre-populate areas
+        const dbAreas = areas.data?.map(a => a.area_name) || []
+        setSelectedAreas(dbAreas)
+
+        //pre-populate beneficiaries
         const dbBeneficiaries = beneficiaries.data?.map(b => b.ben_name) || []
         setSelectedBeneficiaries(dbBeneficiaries)
 
-        // Pre-populate selected causes from database
+        //pre-populate causes
         const dbCauses = causes.data?.map(c => c.cause_name) || []
         setSelectedCauses(dbCauses)
 
@@ -154,6 +159,7 @@ function UserInput({ resetTrigger }) {
     setCurrentStep(1)
     setCharityNumber("")
     setCharityData(null)
+    setSelectedAreas([])
     setSelectedBeneficiaries([])
     setSelectedCauses([])
     setFunderNumber("")
@@ -168,7 +174,7 @@ function UserInput({ resetTrigger }) {
 
   const handleFormSubmit = (e) => {
     e.preventDefault()
-    if (currentStep === 5) {
+    if (currentStep === 6) {
       handleSubmit(e)
     } else {
       handleNext()
@@ -180,7 +186,7 @@ function UserInput({ resetTrigger }) {
       <div className="app-container">
         <h2 className="app-title">Get your prospie score</h2>
 
-        <ProgressIndicator currentStep={currentStep} totalSteps={5} />
+        <ProgressIndicator currentStep={currentStep} totalSteps={6} />
 
         <div className="app-form-container">
           <form onSubmit={handleFormSubmit}>
@@ -192,33 +198,40 @@ function UserInput({ resetTrigger }) {
               <Step2ConfirmDetails
                 charityData={charityData}
                 onBack={handleBack}
-                onUseThis={() => setCurrentStep(5)}
+                onUseThis={() => setCurrentStep(6)}
                 onEdit={() => setCurrentStep(3)}
               />
             )}
 
             {currentStep === 3 && (
+              <Step3Areas
+                selectedAreas={selectedAreas}
+                onChange={setSelectedAreas}
+              />
+            )}
+
+            {currentStep === 4 && (
               <Step4Beneficiaries
                 selectedBeneficiaries={selectedBeneficiaries}
                 onChange={setSelectedBeneficiaries}
               />
             )}
 
-            {currentStep === 4 && (
+            {currentStep === 5 && (
               <Step5Causes
                 selectedCauses={selectedCauses}
                 onChange={setSelectedCauses}
               />
             )}
 
-            {currentStep === 5 && (
+            {currentStep === 6 && (
               <StepXFunderNumber funderNumber={funderNumber} onChange={setFunderNumber} />
             )}
 
             {currentStep !== 2 && (
               <FormNavigation
                 currentStep={currentStep}
-                totalSteps={5}
+                totalSteps={6}
                 onBack={handleBack}
                 onNext={handleNext}
                 onSubmit={handleSubmit}

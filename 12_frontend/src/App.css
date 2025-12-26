@@ -307,6 +307,13 @@
   margin-bottom: 0.25rem;
 }
 
+.form-helper-text {
+  font-size: 0.85rem;
+  color: #b8a8d4;
+  margin: -0.25rem 0 0.5rem 0;
+  font-style: italic;
+}
+
 .form-group input {
   padding: 0.85rem 1rem;
   font-size: 1rem;
