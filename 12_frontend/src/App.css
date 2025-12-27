@@ -377,6 +377,25 @@
   text-align: left;
 }
 
+.question-heading {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
+  text-align: left;
+  padding: 0 0 0.5rem 0.75rem;
+  border-left: 3px solid transparent;
+  border-image: linear-gradient(180deg, rgba(142, 125, 179, 0.6), rgba(111, 163, 168, 0.4)) 1;
+  position: relative;
+  background: linear-gradient(90deg, rgba(142, 125, 179, 0.05), transparent 50%);
+}
+
+.question-heading-text {
+  background: linear-gradient(135deg, #dcd3ed, #b8a8d4, #8e7db3, #6fa3a8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .form-subsection {
   display: flex;
   flex-direction: column;

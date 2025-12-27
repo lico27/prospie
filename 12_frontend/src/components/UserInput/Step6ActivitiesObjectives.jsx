@@ -51,7 +51,9 @@ function Step6ActivitiesObjectives({ activities, objectives, onActivitiesChange,
 
       {/* Activities Section */}
       <div className="form-subsection">
-        <h4 className="form-subheading">What activities does your charity carry out?</h4>
+        <div className="question-heading">
+          <span className="question-heading-text">What activities does your charity carry out?</span>
+        </div>
         <textarea
           value={activities}
           onChange={(e) => onActivitiesChange(e.target.value)}
@@ -63,7 +65,9 @@ function Step6ActivitiesObjectives({ activities, objectives, onActivitiesChange,
 
       {/* Objectives Section */}
       <div className="form-subsection">
-        <h4 className="form-subheading">What are your charity's objectives?</h4>
+        <div className="question-heading">
+          <span className="question-heading-text">What are your charity's objectives?</span>
+        </div>
         <textarea
           value={objectives}
           onChange={(e) => onObjectivesChange(e.target.value)}

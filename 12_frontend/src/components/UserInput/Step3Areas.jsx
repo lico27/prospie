@@ -190,7 +190,9 @@ function Step3Areas({ selectedAreas, onChange }) {
 
   return (
     <div className="form-group">
-      <label>Where does your project operate?</label>
+      <div className="question-heading">
+        <span className="question-heading-text">Where does your project operate?</span>
+      </div>
       <p className="form-helper-text">Select all that apply. Type to search or add a custom area.</p>
       {loading ? (
         <div>Loading areas...</div>

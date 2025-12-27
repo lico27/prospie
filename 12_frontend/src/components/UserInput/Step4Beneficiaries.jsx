@@ -4,7 +4,9 @@ import { beneficiaryOptions } from "../../data/constants"
 function Step3Beneficiaries({ selectedBeneficiaries, onChange }) {
   return (
     <div className="form-group">
-      <label>Who does your project benefit?</label>
+      <div className="question-heading">
+        <span className="question-heading-text">Who does your project benefit?</span>
+      </div>
       <CheckboxGroup
         options={beneficiaryOptions}
         selectedValues={selectedBeneficiaries}

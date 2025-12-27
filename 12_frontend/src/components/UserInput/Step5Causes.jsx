@@ -4,7 +4,9 @@ import { causeOptions } from "../../data/constants"
 function Step3Causes({ selectedCauses, onChange }) {
   return (
     <div className="form-group">
-      <label>What causes does your project support?</label>
+      <div className="question-heading">
+        <span className="question-heading-text">What causes does your project support?</span>
+      </div>
       <CheckboxGroup
         options={causeOptions}
         selectedValues={selectedCauses}

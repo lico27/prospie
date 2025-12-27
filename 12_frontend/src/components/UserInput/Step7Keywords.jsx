@@ -111,7 +111,9 @@ function Step7Keywords({ keywords, onChange, isExtracting }) {
 
   return (
     <div className="form-group">
-      <label>Review Your Keywords</label>
+      <div className="question-heading">
+        <span className="question-heading-text">Review Your Keywords</span>
+      </div>
       <p className="form-helper-text">
         These keywords have been automatically extracted from your areas, beneficiaries, causes, activities, and objectives.
         You can add (or delete) keywords below.

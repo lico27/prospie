@@ -1,7 +1,9 @@
 function Step1CharityNumber({ charityNumber, onChange }) {
   return (
     <div className="form-group">
-      <label htmlFor="charityNumber">What is your registered charity number?</label>
+      <div className="question-heading">
+        <span className="question-heading-text">What is your registered charity number?</span>
+      </div>
       <input
         type="text"
         id="charityNumber"
