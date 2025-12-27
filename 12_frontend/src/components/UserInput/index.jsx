@@ -7,6 +7,7 @@ import Step2ConfirmDetails from "./Step2ConfirmDetails"
 import Step3Areas from "./Step3Areas"
 import Step4Beneficiaries from "./Step4Beneficiaries"
 import Step5Causes from "./Step5Causes"
+import Step6Activities from "./Step6ActivitiesObjectives"
 import StepXFunderNumber from "./StepXFunderNumber"
 
 function UserInput({ resetTrigger }) {
@@ -16,6 +17,8 @@ function UserInput({ resetTrigger }) {
   const [selectedAreas, setSelectedAreas] = useState([])
   const [selectedBeneficiaries, setSelectedBeneficiaries] = useState([])
   const [selectedCauses, setSelectedCauses] = useState([])
+  const [activities, setActivities] = useState("")
+  const [objectives, setObjectives] = useState("")
   const [funderNumber, setFunderNumber] = useState("")
   const [funderName, setFunderName] = useState(null)
   const [funderWebsite, setFunderWebsite] = useState(null)
@@ -54,7 +57,7 @@ function UserInput({ resetTrigger }) {
   }
 
   const handleNext = async () => {
-    if (currentStep < 6) {
+    if (currentStep < 7) {
       if (currentStep === 1) {
         await validateCharityNumber()
       } else {
@@ -131,6 +134,12 @@ function UserInput({ resetTrigger }) {
         const dbCauses = causes.data?.map(c => c.cause_name) || []
         setSelectedCauses(dbCauses)
 
+        //pre-populate activities
+        setActivities(recipient.recipient_activities || "")
+
+        //pre-populate objectives
+        setObjectives(recipient.recipient_objectives || "")
+
         setCharityData(enrichedData)
         setCurrentStep(currentStep + 1)
         setError(null)
@@ -162,6 +171,8 @@ function UserInput({ resetTrigger }) {
     setSelectedAreas([])
     setSelectedBeneficiaries([])
     setSelectedCauses([])
+    setActivities("")
+    setObjectives("")
     setFunderNumber("")
     setFunderName(null)
     setFunderWebsite(null)
@@ -174,10 +185,20 @@ function UserInput({ resetTrigger }) {
 
   const handleFormSubmit = (e) => {
     e.preventDefault()
-    if (currentStep === 6) {
+    if (currentStep === 7) {
       handleSubmit(e)
     } else {
       handleNext()
+    }
+  }
+
+  const handleStepClick = (step) => {
+    //only allow backwords navigation
+    if (step < currentStep) {
+      setCurrentStep(step)
+      setError(null)
+      setFunderName(null)
+      setFunderWebsite(null)
     }
   }
 
@@ -186,7 +207,11 @@ function UserInput({ resetTrigger }) {
       <div className="app-container">
         <h2 className="app-title">Get your prospie score</h2>
 
-        <ProgressIndicator currentStep={currentStep} totalSteps={6} />
+        <ProgressIndicator
+          currentStep={currentStep}
+          totalSteps={7}
+          onStepClick={handleStepClick}
+        />
 
         <div className="app-form-container">
           <form onSubmit={handleFormSubmit}>
@@ -198,7 +223,7 @@ function UserInput({ resetTrigger }) {
               <Step2ConfirmDetails
                 charityData={charityData}
                 onBack={handleBack}
-                onUseThis={() => setCurrentStep(6)}
+                onUseThis={() => setCurrentStep(7)}
                 onEdit={() => setCurrentStep(3)}
               />
             )}
@@ -225,13 +250,22 @@ function UserInput({ resetTrigger }) {
             )}
 
             {currentStep === 6 && (
+              <Step6Activities
+                activities={activities}
+                objectives={objectives}
+                onActivitiesChange={setActivities}
+                onObjectivesChange={setObjectives}
+              />
+            )}
+
+            {currentStep === 7 && (
               <StepXFunderNumber funderNumber={funderNumber} onChange={setFunderNumber} />
             )}
 
             {currentStep !== 2 && (
               <FormNavigation
                 currentStep={currentStep}
-                totalSteps={6}
+                totalSteps={7}
                 onBack={handleBack}
                 onNext={handleNext}
                 onSubmit={handleSubmit}
