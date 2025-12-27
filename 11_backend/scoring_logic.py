@@ -137,7 +137,7 @@ def check_causes(funder_list, user_list):
     
     #avoid zero division
     if len(user_causes) == 0:
-        return 0.0, []
+        return 0.0, [], False
     
     #categorise funder causes
     funder_specific = set(cause for cause in funder_causes if cause != gcp)
