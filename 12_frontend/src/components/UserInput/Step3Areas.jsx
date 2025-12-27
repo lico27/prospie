@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import Select from "react-select"
+import CreatableSelect from "react-select/creatable"
 import { supabase } from "../../supabaseClient"
 
 function Step3Areas({ selectedAreas, onChange }) {
@@ -179,17 +179,23 @@ function Step3Areas({ selectedAreas, onChange }) {
       "&:hover": {
         color: "#ffb3b3"
       }
+    }),
+    noOptionsMessage: (provided) => ({
+      ...provided,
+      color: "#c9c0de",
+      fontSize: "0.9rem",
+      padding: "0.75rem"
     })
   }
 
   return (
     <div className="form-group">
       <label>Where does your project operate?</label>
-      <p className="form-helper-text">Select all that apply</p>
+      <p className="form-helper-text">Select all that apply. Type to search or add a custom area.</p>
       {loading ? (
         <div>Loading areas...</div>
       ) : (
-        <Select
+        <CreatableSelect
           isMulti
           options={areaOptions}
           value={selectedOptions}
@@ -198,6 +204,7 @@ function Step3Areas({ selectedAreas, onChange }) {
           styles={customStyles}
           className="react-select-container"
           classNamePrefix="react-select"
+          formatCreateLabel={(inputValue) => `Add "${inputValue}"`}
         />
       )}
     </div>
