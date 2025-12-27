@@ -525,6 +525,30 @@
   font-style: italic;
 }
 
+.hint-list {
+  font-size: 0.85rem;
+  color: #c9c0de;
+  line-height: 1.6;
+  margin: 0.5rem 0 0 1rem;
+  padding-left: 1rem;
+}
+
+.hint-list li {
+  margin-bottom: 0.5rem;
+}
+
+.hint-link {
+  color: #8ebcc0;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(142, 125, 179, 0.3);
+  transition: all 0.2s ease;
+}
+
+.hint-link:hover {
+  color: #b8a8d4;
+  border-bottom-color: rgba(184, 168, 212, 0.6);
+}
+
 .form-group input {
   padding: 0.85rem 1rem;
   font-size: 1rem;
