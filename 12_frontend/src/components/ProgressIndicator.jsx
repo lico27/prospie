@@ -8,6 +8,7 @@ function ProgressIndicator({ currentStep, totalSteps = 4, onStepClick }) {
     "Beneficiaries",
     "Causes",
     "Activities & Objectives",
+    "Keywords",
     "Funder Number"
   ]
 

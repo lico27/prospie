@@ -8,7 +8,9 @@ import Step3Areas from "./Step3Areas"
 import Step4Beneficiaries from "./Step4Beneficiaries"
 import Step5Causes from "./Step5Causes"
 import Step6Activities from "./Step6ActivitiesObjectives"
+import Step7Keywords from "./Step7Keywords"
 import StepXFunderNumber from "./StepXFunderNumber"
+import { fetchUkcatData, extractClassifications } from "../../utils/keywordExtractor"
 
 function UserInput({ resetTrigger }) {
   const [currentStep, setCurrentStep] = useState(1)
@@ -19,6 +21,8 @@ function UserInput({ resetTrigger }) {
   const [selectedCauses, setSelectedCauses] = useState([])
   const [activities, setActivities] = useState("")
   const [objectives, setObjectives] = useState("")
+  const [keywords, setKeywords] = useState([])
+  const [isExtractingKeywords, setIsExtractingKeywords] = useState(false)
   const [funderNumber, setFunderNumber] = useState("")
   const [funderName, setFunderName] = useState(null)
   const [funderWebsite, setFunderWebsite] = useState(null)
@@ -57,15 +61,45 @@ function UserInput({ resetTrigger }) {
   }
 
   const handleNext = async () => {
-    if (currentStep < 7) {
+    if (currentStep < 8) {
       if (currentStep === 1) {
         await validateCharityNumber()
+      } else if (currentStep === 6) {
+        // Extract keywords before moving to step 7
+        await extractKeywordsFromData()
+        setCurrentStep(currentStep + 1)
+        setError(null)
+        setFunderName(null)
+        setFunderWebsite(null)
       } else {
         setCurrentStep(currentStep + 1)
         setError(null)
         setFunderName(null)
         setFunderWebsite(null)
       }
+    }
+  }
+
+  const extractKeywordsFromData = async () => {
+    setIsExtractingKeywords(true)
+    try {
+      const ukcatData = await fetchUkcatData()
+
+      //prepare data and extract classifications
+      const extractionData = {
+        activities,
+        objectives,
+        areas: selectedAreas,
+        beneficiaries: selectedBeneficiaries,
+        causes: selectedCauses
+      }
+      const extractedKeywords = extractClassifications(extractionData, ukcatData, [])
+      setKeywords(extractedKeywords)
+    } catch (err) {
+      console.error("Error extracting keywords:", err)
+      setError("Failed to extract keywords. You can still add them manually.")
+    } finally {
+      setIsExtractingKeywords(false)
     }
   }
 
@@ -82,6 +116,7 @@ function UserInput({ resetTrigger }) {
 
     setLoading(true)
     setError(null)
+    setKeywords([])
 
     try {
       const { data: recipient, error } = await supabase
@@ -173,6 +208,8 @@ function UserInput({ resetTrigger }) {
     setSelectedCauses([])
     setActivities("")
     setObjectives("")
+    setKeywords([])
+    setIsExtractingKeywords(false)
     setFunderNumber("")
     setFunderName(null)
     setFunderWebsite(null)
@@ -185,7 +222,7 @@ function UserInput({ resetTrigger }) {
 
   const handleFormSubmit = (e) => {
     e.preventDefault()
-    if (currentStep === 7) {
+    if (currentStep === 8) {
       handleSubmit(e)
     } else {
       handleNext()
@@ -209,7 +246,7 @@ function UserInput({ resetTrigger }) {
 
         <ProgressIndicator
           currentStep={currentStep}
-          totalSteps={7}
+          totalSteps={8}
           onStepClick={handleStepClick}
         />
 
@@ -223,7 +260,7 @@ function UserInput({ resetTrigger }) {
               <Step2ConfirmDetails
                 charityData={charityData}
                 onBack={handleBack}
-                onUseThis={() => setCurrentStep(7)}
+                onUseThis={() => setCurrentStep(8)}
                 onEdit={() => setCurrentStep(3)}
               />
             )}
@@ -259,13 +296,21 @@ function UserInput({ resetTrigger }) {
             )}
 
             {currentStep === 7 && (
+              <Step7Keywords
+                keywords={keywords}
+                onChange={setKeywords}
+                isExtracting={isExtractingKeywords}
+              />
+            )}
+
+            {currentStep === 8 && (
               <StepXFunderNumber funderNumber={funderNumber} onChange={setFunderNumber} />
             )}
 
             {currentStep !== 2 && (
               <FormNavigation
                 currentStep={currentStep}
-                totalSteps={7}
+                totalSteps={8}
                 onBack={handleBack}
                 onNext={handleNext}
                 onSubmit={handleSubmit}
