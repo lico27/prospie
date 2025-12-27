@@ -132,7 +132,7 @@ function Step7Keywords({ keywords, onChange, isExtracting }) {
           <div className="hint-example">
             <p><strong>How it works:</strong></p>
             <ul className="hint-list">
-              <li>prospie has automatically extracted keywords using <a href="https://charityclassification.org.uk/" target="_blank" rel="noopener noreferrer" className="hint-link">UKCAT charity classifications</a> and your input</li>
+              <li>prospie has automatically extracted keywords using <a href="https://charityclassification.org.uk/" target="_blank" rel="noopener noreferrer" className="app-link">UKCAT charity classifications</a> and your input</li>
               <li>More specific keywords (like "care-experienced young people") offer more value than broad terms (like "education")</li>
               <li>You can remove irrelevant keywords or add additional ones that better describe your work</li>
             </ul>

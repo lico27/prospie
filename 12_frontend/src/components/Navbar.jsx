@@ -3,11 +3,18 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import "./Navbar.css";
 
-function Navbar1({ onHomeClick }) {
+function Navbar1({ onHomeClick, onAboutClick }) {
   const handleHomeClick = (e) => {
     e.preventDefault();
     if (onHomeClick) {
       onHomeClick();
+    }
+  };
+
+  const handleAboutClick = (e) => {
+    e.preventDefault();
+    if (onAboutClick) {
+      onAboutClick();
     }
   };
 
@@ -19,7 +26,7 @@ function Navbar1({ onHomeClick }) {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="w-100 justify-content-evenly">
             <Nav.Link href="#home" onClick={handleHomeClick}>Home</Nav.Link>
-            <Nav.Link href="#about">About</Nav.Link>
+            <Nav.Link href="#about" onClick={handleAboutClick}>About</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
